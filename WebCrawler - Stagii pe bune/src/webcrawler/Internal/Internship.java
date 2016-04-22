@@ -229,4 +229,14 @@ public class Internship implements IInternship {
         hash = 83 * hash + Objects.hashCode(this.city);
         return hash;
     }
+
+    @Override
+    public String toString() {
+        return this.company + " | " + this.name + " | " 
+                + this.department + " | " + this.city + " | "
+                + this.seats + " | " + this.applications + " | "
+                + this.report + " | " + this.period;        
+    }
+    
+    
 }
