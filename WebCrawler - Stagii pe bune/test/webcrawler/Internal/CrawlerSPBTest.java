@@ -5,8 +5,11 @@
  */
 package webcrawler.Internal;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -61,13 +64,13 @@ public class CrawlerSPBTest {
     @Test
     public void getInternships(){
         CrawlerSPB crawler = CrawlerSPB.getInstance();
-        HashSet<Internship> internships = new HashSet<>();
+        crawler.clearInternships();
         
+        HashSet<Internship> internships = new HashSet<>();
         
         Internship internship1 = new Internship();
         Internship internship2 = new Internship();
 
-        
         internship1.setName("Java developer");
         internship1.setCompany("Google");
         internship1.setCity("Bucharest");
@@ -89,9 +92,9 @@ public class CrawlerSPBTest {
     public void SetGetURL(){
         CrawlerSPB crawler = CrawlerSPB.getInstance();
         
-        crawler.setURL("www.google.ro");
+        crawler.setURL(3,117);
         
-        assertEquals(crawler.getURL(),"www.google.ro");
+        assertEquals(crawler.getURL(),"http://www.stagiipebune.ro/stagii.html&page_num=3&page=stagii&category=117");
     }
     
     @Test
@@ -101,16 +104,6 @@ public class CrawlerSPBTest {
         crawler.setNameCrawler("Stagii pe bune");
         
         assertEquals(crawler.getNameCrawler(),"Stagii pe bune");
-    }
-    
-    @Test
-    public void SetGetNumberOfPages(){
-        CrawlerSPB crawler = CrawlerSPB.getInstance();
-        int numberOfPages = 10;
-        
-        crawler.setNumberOfPages(numberOfPages);
-        
-        assertEquals(crawler.getNumberOfPages(),numberOfPages);
     }
     
     @Test 
@@ -157,6 +150,44 @@ public class CrawlerSPBTest {
         cities.add("Cluj");
        
         assertTrue(crawler.getCities().equals(cities));
+    }
+    
+    @Test
+    public void determinateNumberOfPages() throws IOException{
+       
+        CrawlerSPB crawler = CrawlerSPB.getInstance();
+        
+        assertEquals(crawler.determinesNumberOfPages(0,128),0);
+    }
+    
+    @Test
+    public void parse() throws IOException{
+        CrawlerSPB crawler = CrawlerSPB.getInstance();
+        crawler.clearInternships();
+        
+        crawler.determinesNumberOfPages(0,128);
+        
+        crawler.parse();
+
+        HashSet<Internship> internships = new HashSet<>();
+
+        Internship internship = new Internship();
+
+        internship.setCompany("AQUASoft");
+        internship.setName("Management &amp; Back-Office Specialist");
+        internship.setDepartment("Management");
+        internship.setCity("Bucuresti");
+        internship.setSeats(2);
+        internship.setApplications(4);
+        internships.add(internship);
+        
+        //Logger.getLogger(CrawlerSPBTest.class.getName()).log(Level.INFO, "Nr: " + crawler.getURL());
+        //Logger.getLogger(CrawlerSPBTest.class.getName()).log(Level.INFO, "Nr: " + crawler.getInternships().size());
+
+        assertTrue(crawler.getInternships().equals(internships));
+        
+        
+        
     }
    
 }

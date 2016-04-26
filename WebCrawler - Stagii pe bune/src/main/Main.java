@@ -25,17 +25,7 @@ public class Main {
         
         CrawlerSPB crawler = CrawlerSPB.getInstance();
 
-        crawler.setNameCrawler("Stagii pe bune");
-        Internship intern = new Internship();
-        intern.setCompany("Google");
-        intern.setName("Java developer");
-        intern.setDepartment("Product delivery");
-        intern.setCity("Bucharest");
-        intern.setSeats(10);
-        intern.setApplications(20);
-        intern.setReport(2);
-        
-        crawler.addInternship(intern);
+        crawler.setNameCrawler("Stagii pe bune");        
         
         crawler.parse();
         

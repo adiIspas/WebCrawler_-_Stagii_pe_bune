@@ -5,6 +5,9 @@
  */
 package webcrawler.Interfaces;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+
 /**
  * Interface which modeling the crawler functionality.
  * @author Adrian ISPAS, 243
@@ -13,5 +16,5 @@ public interface ICrawler {
     /***
      * Parse algorithm for the crawler.
      */
-    void parse();
+    void parse()throws MalformedURLException, IOException;
 }

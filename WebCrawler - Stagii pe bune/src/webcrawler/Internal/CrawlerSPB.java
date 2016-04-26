@@ -4,8 +4,17 @@
  * and open the template in the editor.
  */
 package webcrawler.Internal;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import webcrawler.Interfaces.*;
 
 /**
@@ -19,9 +28,14 @@ public class CrawlerSPB implements ICrawler {
     private ArrayList<String> categories;
     private ArrayList<String> technologies;
     private ArrayList<String> cities;
-    private int numberOfPages;
+    private int numberOfPages = 0;
     private String nameOfCrawler;
     private static CrawlerSPB instance = new CrawlerSPB();
+    
+    final private String base = "http://www.stagiipebune.ro/stagii.html";
+    final private String page = "&page_num=";
+    final private String intern = "&page=stagii";
+    final private String category = "&category=";
     
     /**
      * Private constructor for use a singleton design pattern.
@@ -70,7 +84,7 @@ public class CrawlerSPB implements ICrawler {
      * @return The array with internships.
      */
     public HashSet<Internship> getInternships() {
-        return internships;
+        return new HashSet<>(internships);
     }
 
     /**
@@ -91,10 +105,11 @@ public class CrawlerSPB implements ICrawler {
 
     /**
      * Set the URL for the internship.
-     * @param URL URL of the internship.
+     * @param pageNumber
+     * @param categoryType
      */
-    public void setURL(String URL) {
-        this.URL = URL;
+    public void setURL(int pageNumber, int categoryType) {
+        this.URL =  base + page + pageNumber + intern + category + categoryType;
     }  
 
     /**
@@ -106,27 +121,30 @@ public class CrawlerSPB implements ICrawler {
     }
 
     /**
-     * Set the number of pages for the site.
-     * @param numberOfPages Number of pages.
-     */
-    public void setNumberOfPages(int numberOfPages) {
-        this.numberOfPages = numberOfPages;
-    }
-
-    /**
      * Determines number of pages for site.
      * @return Number of pages.
+     * @throws java.net.MalformedURLException
      */
-    public int determinesNumberOfPages(){
-        return -1;
-    }
-
-    /**
-     * Get the next page for site.
-     * @return Next page.
-     */
-    public String nextPage(){
-        return null;
+    public int determinesNumberOfPages(int startPage, int categoryType) throws MalformedURLException, IOException{
+        
+        // Set start URL
+        setURL(startPage, categoryType);
+        
+        URL siteURL = new URL(getURL());
+        BufferedReader input = new BufferedReader(new InputStreamReader(siteURL.openStream()));
+        
+        Pattern numberOfPagesPattern = Pattern.compile("&nbsp; din (.+?) ");
+        
+        String inputLine;
+        while ((inputLine = input.readLine()) != null){ 
+            Matcher numberOfPagesMatcher = numberOfPagesPattern.matcher(inputLine);
+            if (numberOfPagesMatcher.find()){
+                String number = numberOfPagesMatcher.group(1);
+                numberOfPages = Integer.parseInt(number);
+                break;
+            }
+        }
+        return numberOfPages;
     }
 
     /**
@@ -176,12 +194,147 @@ public class CrawlerSPB implements ICrawler {
     public ArrayList<String> getCities(){
         return cities;
     }
+    
+    public void clearInternships(){
+        internships.clear();
+    }
 
     /**
      * Parse method for the web site stagiipebune.ro
      */
     @Override
-    public void parse() {
+    public void parse() throws MalformedURLException, IOException{
+        
+        URL siteURL;
+        determinesNumberOfPages(0,114);
+        
+        internships.clear();
+        
+        String company = null;
+        String name = null;
+        String department = null;
+        String city = null;
+        String period = null;
+        String seats = null;
+        String applications = null;
 
+        String inputLine = null;
+        boolean nameAdded = false;
+        boolean departmentAdded = false;
+        boolean cityAdded = false;
+        boolean periodAdded = false;
+        boolean seatsAdded = false;
+        boolean applicationsAdded = false; 
+            
+        for(int i = 0; i < numberOfPages; i++){
+        
+            determinesNumberOfPages(i, 115);
+            siteURL = new URL(getURL());
+            Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "URL: {0}", getURL());
+            BufferedReader input = new BufferedReader(new InputStreamReader(siteURL.openStream()));
+ 
+            Pattern companyInternshipPattern = Pattern.compile("<a href=.+? class='burgundtitles'>(.+?)</a>");
+            Pattern nameInternshipPattern = Pattern.compile("<td><a href=.+?>(.+?)</a></td>");
+            Pattern departmentInternshipPattern = Pattern.compile("<td>(.+?)</td>");
+            Pattern cityInternshipPattern = Pattern.compile("<td>(.+?)</td>");
+            Pattern periodInternshipPattern = Pattern.compile("<td>(.+?)</td>");
+            Pattern seatsInternshipPattern = Pattern.compile("<td align=.+?>(.+?)</td>");
+            Pattern applicationsInternshipPattern = Pattern.compile("<td align=.+?>(.+?)</td>");
+            Pattern endInternshipPattern = Pattern.compile("<a href=.+? onmouseover=.+? onmouseout=.+?>(.+?)</a>");
+            
+            while ((inputLine = input.readLine()) != null){
+                
+                Matcher companyInternshipMatcher = companyInternshipPattern.matcher(inputLine);
+                if (companyInternshipMatcher.find()){
+                    company = companyInternshipMatcher.group(1);
+                    //System.out.println("Company: " + company);
+                    continue;
+                }
+                
+                Matcher nameInternshipMatcher = nameInternshipPattern.matcher(inputLine);
+                if (nameInternshipMatcher.find() && nameAdded == false){
+                    name = nameInternshipMatcher.group(1);
+                    nameAdded = true;
+                    //System.out.println("Name: " + name);
+                    continue;
+                }
+                
+                Matcher departmentInternshipMatcher = departmentInternshipPattern.matcher(inputLine);
+                if (departmentInternshipMatcher.find() && nameAdded == true && departmentAdded == false){
+                    department = departmentInternshipMatcher.group(1);
+                    departmentAdded = true;
+                    //System.out.println("Department: " + department);
+                    continue;
+                }
+                
+                Matcher cityInternshipMatcher = cityInternshipPattern.matcher(inputLine);
+                if (cityInternshipMatcher.find() && nameAdded == true && departmentAdded == true && cityAdded == false){
+                    city = cityInternshipMatcher.group(1);
+                    //System.out.println("City: " + city);
+                    cityAdded = true;
+                    continue;
+                }
+                
+                Matcher periodInternshipMatcher = periodInternshipPattern.matcher(inputLine);
+                if (periodInternshipMatcher.find() && nameAdded == true
+                        && departmentAdded == true && cityAdded == true && periodAdded == false){
+                    period = periodInternshipMatcher.group(1);
+                    //System.out.println("Period: " + period);
+                    periodAdded = true;
+                    continue;
+                }
+                
+                Matcher seatsInternshipMatcher = seatsInternshipPattern.matcher(inputLine);
+                if (seatsInternshipMatcher.find() && nameAdded == true
+                        && departmentAdded == true && cityAdded == true && periodAdded == true && seatsAdded == false){
+                    seats = seatsInternshipMatcher.group(1);
+                    //System.out.println("Seats: " + seats);
+                    seatsAdded = true;
+                    continue;
+                }
+                
+                Matcher applicationsInternshipMatcher = applicationsInternshipPattern.matcher(inputLine);
+                if (applicationsInternshipMatcher.find() && nameAdded == true
+                        && departmentAdded == true && cityAdded == true && periodAdded == true && seatsAdded == true && applicationsAdded == false){
+                    applications = applicationsInternshipMatcher.group(1);
+                    //System.out.println("Applications: " + applications);
+                    applicationsAdded = true;
+                    continue;
+                }
+                
+                Matcher endInternshipMatcher = endInternshipPattern.matcher(inputLine);
+                if (endInternshipMatcher.find() && nameAdded == true
+                        && departmentAdded == true && cityAdded == true
+                        && periodAdded == true && seatsAdded == true
+                        && applicationsAdded == true){
+                    
+                    Internship internship = new Internship();
+                    
+                    internship.setCompany(company);
+                    internship.setName(name);
+                    internship.setDepartment(department);
+                    internship.setCity(city);
+                    
+                    // TO DO: "3-5" locuri si "2 " locuri.
+                    // Solutie: Un parseInt personalizat :)
+                    if(seats.contains("-") == true || seats.contains(" ") == true)
+                        internship.setSeats(seats.charAt(seats.length() - 1));
+                    else
+                        internship.setSeats(Integer.parseInt(seats));
+                    internship.setApplications(Integer.parseInt(applications));
+                    
+                    addInternship(internship);
+                    
+                    nameAdded = false;
+                    departmentAdded = false;
+                    cityAdded = false;
+                    periodAdded = false;
+                    seatsAdded = false;
+                    applicationsAdded = false;
+                    
+                    //System.out.println();
+                }
+            }
+       }
     }
 }

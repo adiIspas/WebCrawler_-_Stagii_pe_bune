@@ -214,7 +214,9 @@ public class Internship implements IInternship {
             if((stagiu.company.equals(((Internship) obj).company)) 
                 && (stagiu.name.equals(((Internship) obj).name))
                 && (stagiu.department.equals(((Internship) obj).department))
-                && (stagiu.city.equals(((Internship) obj).city)))
+                && (stagiu.city.equals(((Internship) obj).city))
+                && (stagiu.seats == ((Internship) obj).seats)
+                && (stagiu.applications == ((Internship) obj).applications))
                 return true;
         }
         return false;

@@ -19,7 +19,16 @@ import java.util.regex.Pattern;
 public class TestCrawler {
 
     public static void main(String[] args) throws MalformedURLException, IOException {
-        URL siteURL = new URL("http://www.stagiipebune.ro/stagii.html&domain=4");
+        String base = "http://www.stagiipebune.ro/stagii.html";
+        String page = "&page_num=";
+        String intern = "&page=stagii";
+        String category = "&category=";
+        String pageNumber = "0";
+        String categoryType = "128";
+        
+        String url = base + page + pageNumber + intern + category + categoryType;
+        URL siteURL = new URL(url);
+        //URL siteURL = new URL("http://www.stagiipebune.ro/stagii.html&page_num=0&page=stagii&category=114");
         BufferedReader input = new BufferedReader(new InputStreamReader(siteURL.openStream()));
 
         String inputLine;
@@ -29,6 +38,8 @@ public class TestCrawler {
         boolean periodAdded = false;
         boolean seatsAdded = false;
         boolean applicationsAdded = false;
+        
+        int numberOfPages = -1;
 
         Pattern companyInternshipPattern = Pattern.compile("<a href=.+? class='burgundtitles'>(.+?)</a>");
         Pattern nameInternshipPattern = Pattern.compile("<td><a href=.+?>(.+?)</a></td>");
@@ -38,8 +49,17 @@ public class TestCrawler {
         Pattern seatsInternshipPattern = Pattern.compile("<td align=.+?>(.+?)</td>");
         Pattern applicationsInternshipPattern = Pattern.compile("<td align=.+?>(.+?)</td>");
         Pattern endInternshipPattern = Pattern.compile("<a href=.+? onmouseover=.+? onmouseout=.+?>(.+?)</a>");
+        Pattern numberOfPagesPattern = Pattern.compile("&nbsp; din (.+?) ");
         
-        while ((inputLine = input.readLine()) != null){      
+        while ((inputLine = input.readLine()) != null){ 
+            Matcher numberOfPagesMatcher = numberOfPagesPattern.matcher(inputLine);
+            if (numberOfPagesMatcher.find()){
+                String number = numberOfPagesMatcher.group(1);
+                numberOfPages = Integer.parseInt(number);
+                System.out.println("<-- Number: " + (numberOfPages - 1));
+                continue;
+            }
+            
             Matcher companyInternshipMatcher = companyInternshipPattern.matcher(inputLine);
             if (companyInternshipMatcher.find()){
                 String company = companyInternshipMatcher.group(1);
