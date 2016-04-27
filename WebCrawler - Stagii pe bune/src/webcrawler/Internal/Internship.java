@@ -205,8 +205,73 @@ public class Internship implements IInternship {
     public void setApplied(boolean applied){
         this.applied = applied;
     }
-    
+
     @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 97 * hash + Objects.hashCode(this.company);
+        hash = 97 * hash + Objects.hashCode(this.name);
+        hash = 97 * hash + Objects.hashCode(this.department);
+        hash = 97 * hash + Objects.hashCode(this.city);
+        hash = 97 * hash + Objects.hashCode(this.period);
+        hash = 97 * hash + this.seats;
+        hash = 97 * hash + this.applications;
+        hash = 97 * hash + this.report;
+        hash = 97 * hash + (this.seen ? 1 : 0);
+        hash = 97 * hash + (this.favorite ? 1 : 0);
+        hash = 97 * hash + (this.applied ? 1 : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Internship other = (Internship) obj;
+        if (this.seats != other.seats) {
+            return false;
+        }
+        if (this.applications != other.applications) {
+            return false;
+        }
+        if (this.report != other.report) {
+            return false;
+        }
+        if (this.seen != other.seen) {
+            return false;
+        }
+        if (this.favorite != other.favorite) {
+            return false;
+        }
+        if (this.applied != other.applied) {
+            return false;
+        }
+        if (!Objects.equals(this.company, other.company)) {
+            return false;
+        }
+        if (!Objects.equals(this.name, other.name)) {
+            return false;
+        }
+        if (!Objects.equals(this.department, other.department)) {
+            return false;
+        }
+        if (!Objects.equals(this.city, other.city)) {
+            return false;
+        }
+        if (!Objects.equals(this.period, other.period)) {
+            return false;
+        }
+        return true;
+    }
+
+    /*@Override
     public boolean equals(Object obj){
         if (obj instanceof Internship){
             Internship stagiu = (Internship) obj;
@@ -230,7 +295,7 @@ public class Internship implements IInternship {
         hash = 83 * hash + Objects.hashCode(this.department);
         hash = 83 * hash + Objects.hashCode(this.city);
         return hash;
-    }
+    }*/
 
     @Override
     public String toString() {
@@ -238,7 +303,5 @@ public class Internship implements IInternship {
                 + this.department + " | " + this.city + " | "
                 + this.seats + " | " + this.applications + " | "
                 + this.report + " | " + this.period;        
-    }
-    
-    
+    } 
 }

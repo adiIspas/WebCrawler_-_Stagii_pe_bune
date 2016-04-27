@@ -10,6 +10,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import webcrawler.Internal.CrawlerSPB;
@@ -25,14 +29,18 @@ public class Main {
         
         CrawlerSPB crawler = CrawlerSPB.getInstance();
 
-        crawler.setNameCrawler("Stagii pe bune");        
+        crawler.setNameCrawler("Stagii pe bune");
         
+        crawler.addCity("Iasi");
+        crawler.addCity("Bacau");
+        //crawler.addCategory("114");
         crawler.parse();
         
         int nr = 1;
+        System.out.println();
         for(Internship i : crawler.getInternships()){
-            System.out.println(nr + ") " + i);
+            System.out.println(nr + ")" + i);
             nr++;
-        }    
+        }
     }
 }

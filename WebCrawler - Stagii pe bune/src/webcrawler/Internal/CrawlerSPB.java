@@ -10,7 +10,6 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -24,7 +23,7 @@ import webcrawler.Interfaces.*;
 public class CrawlerSPB implements ICrawler {
     
     private String URL;
-    private HashSet<Internship> internships;
+    private ArrayList<Internship> internships;
     private ArrayList<String> categories;
     private ArrayList<String> technologies;
     private ArrayList<String> cities;
@@ -36,18 +35,19 @@ public class CrawlerSPB implements ICrawler {
     final private String page = "&page_num=";
     final private String intern = "&page=stagii";
     final private String category = "&category=";
+    final private String domain = "&domain=4";
     
     /**
      * Private constructor for use a singleton design pattern.
      */
     private CrawlerSPB(){
-        internships = new HashSet<Internship>();
+        internships = new ArrayList<Internship>();
         categories = new ArrayList<String>();
         technologies = new ArrayList<String>();
         cities = new ArrayList<String>();
     }
     private CrawlerSPB(CrawlerSPB other){
-        internships = new HashSet<Internship>();
+        internships = new ArrayList<Internship>();
         categories = new ArrayList<String>();
         technologies = new ArrayList<String>();
         cities = new ArrayList<String>();
@@ -83,8 +83,8 @@ public class CrawlerSPB implements ICrawler {
      * Get the internships what be found.
      * @return The array with internships.
      */
-    public HashSet<Internship> getInternships() {
-        return new HashSet<>(internships);
+    public ArrayList<Internship> getInternships() {
+        return new ArrayList<>(internships);
     }
 
     /**
@@ -92,7 +92,8 @@ public class CrawlerSPB implements ICrawler {
      * @param internship Internship to add.
      */
     public void addInternship(Internship internship) {
-        internships.add(internship);
+        if(internships.contains(internship) == false)
+            internships.add(internship);
     }
 
     /**
@@ -104,12 +105,28 @@ public class CrawlerSPB implements ICrawler {
     }
 
     /**
-     * Set the URL for the internship.
-     * @param pageNumber
-     * @param categoryType
+     * Set the URL for the internship with categories.
+     * @param pageNumber Number of page to parse.
+     * @param categoryType Category for parse.
+     * @throws java.io.IOException
      */
-    public void setURL(int pageNumber, int categoryType) {
+    public void setURLCategory(int pageNumber, String categoryType) throws IOException {
         this.URL =  base + page + pageNumber + intern + category + categoryType;
+        
+        if(pageNumber == 0)
+            determinesNumberOfPages();
+    }  
+    
+    /**
+     * Set the URL for the internship without categories.
+     * @param pageNumber Number of page to parse.
+     * @throws IOException 
+     */
+    public void setURLHome(int pageNumber) throws IOException {
+        this.URL =  base + page + pageNumber + intern + domain;
+        
+        if(pageNumber == 0)
+            determinesNumberOfPages();
     }  
 
     /**
@@ -125,10 +142,7 @@ public class CrawlerSPB implements ICrawler {
      * @return Number of pages.
      * @throws java.net.MalformedURLException
      */
-    public int determinesNumberOfPages(int startPage, int categoryType) throws MalformedURLException, IOException{
-        
-        // Set start URL
-        setURL(startPage, categoryType);
+    public int determinesNumberOfPages() throws MalformedURLException, IOException{
         
         URL siteURL = new URL(getURL());
         BufferedReader input = new BufferedReader(new InputStreamReader(siteURL.openStream()));
@@ -195,6 +209,9 @@ public class CrawlerSPB implements ICrawler {
         return cities;
     }
     
+    /**
+     * Clear the list of internships.
+     */
     public void clearInternships(){
         internships.clear();
     }
@@ -205,11 +222,48 @@ public class CrawlerSPB implements ICrawler {
     @Override
     public void parse() throws MalformedURLException, IOException{
         
-        URL siteURL;
-        determinesNumberOfPages(0,114);
+        boolean isCategoryParse = false;
+        boolean citiesToParse = false;
+        
+        String currentCategory;
         
         internships.clear();
         
+        if(cities.isEmpty()){
+            citiesToParse = false;
+        }
+        else{
+            citiesToParse = true;
+        }
+                
+        if(categories.isEmpty()){
+            currentCategory = "home";
+            parseHelper(citiesToParse, currentCategory);
+        }
+
+    }
+    
+    /**
+     *
+     * @param isCitiesToParse
+     * @param currentCategory
+     * @throws MalformedURLException
+     * @throws IOException
+     */
+    public void parseHelper(boolean isCitiesToParse, String currentCategory) throws MalformedURLException, IOException{
+        
+        URL siteURL;
+        boolean isCategoriesToParse;
+        
+        if(currentCategory.equals("home") == true){
+            isCategoriesToParse = false;
+            setURLHome(0);
+        }
+        else{
+            isCategoriesToParse = true;
+            setURLCategory(0,currentCategory);
+        }
+
         String company = null;
         String name = null;
         String department = null;
@@ -225,14 +279,12 @@ public class CrawlerSPB implements ICrawler {
         boolean periodAdded = false;
         boolean seatsAdded = false;
         boolean applicationsAdded = false; 
-            
-        for(int i = 0; i < numberOfPages; i++){
         
-            determinesNumberOfPages(i, 115);
+        for(int i = 0; i < numberOfPages; i++){
             siteURL = new URL(getURL());
             Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "URL: {0}", getURL());
             BufferedReader input = new BufferedReader(new InputStreamReader(siteURL.openStream()));
- 
+
             Pattern companyInternshipPattern = Pattern.compile("<a href=.+? class='burgundtitles'>(.+?)</a>");
             Pattern nameInternshipPattern = Pattern.compile("<td><a href=.+?>(.+?)</a></td>");
             Pattern departmentInternshipPattern = Pattern.compile("<td>(.+?)</td>");
@@ -241,99 +293,113 @@ public class CrawlerSPB implements ICrawler {
             Pattern seatsInternshipPattern = Pattern.compile("<td align=.+?>(.+?)</td>");
             Pattern applicationsInternshipPattern = Pattern.compile("<td align=.+?>(.+?)</td>");
             Pattern endInternshipPattern = Pattern.compile("<a href=.+? onmouseover=.+? onmouseout=.+?>(.+?)</a>");
-            
+
             while ((inputLine = input.readLine()) != null){
-                
                 Matcher companyInternshipMatcher = companyInternshipPattern.matcher(inputLine);
                 if (companyInternshipMatcher.find()){
                     company = companyInternshipMatcher.group(1);
-                    //System.out.println("Company: " + company);
                     continue;
                 }
-                
+
                 Matcher nameInternshipMatcher = nameInternshipPattern.matcher(inputLine);
                 if (nameInternshipMatcher.find() && nameAdded == false){
                     name = nameInternshipMatcher.group(1);
                     nameAdded = true;
-                    //System.out.println("Name: " + name);
                     continue;
                 }
-                
+
                 Matcher departmentInternshipMatcher = departmentInternshipPattern.matcher(inputLine);
                 if (departmentInternshipMatcher.find() && nameAdded == true && departmentAdded == false){
                     department = departmentInternshipMatcher.group(1);
                     departmentAdded = true;
-                    //System.out.println("Department: " + department);
                     continue;
                 }
-                
+
                 Matcher cityInternshipMatcher = cityInternshipPattern.matcher(inputLine);
                 if (cityInternshipMatcher.find() && nameAdded == true && departmentAdded == true && cityAdded == false){
                     city = cityInternshipMatcher.group(1);
-                    //System.out.println("City: " + city);
                     cityAdded = true;
                     continue;
                 }
-                
+
                 Matcher periodInternshipMatcher = periodInternshipPattern.matcher(inputLine);
                 if (periodInternshipMatcher.find() && nameAdded == true
                         && departmentAdded == true && cityAdded == true && periodAdded == false){
                     period = periodInternshipMatcher.group(1);
-                    //System.out.println("Period: " + period);
                     periodAdded = true;
                     continue;
                 }
-                
+
                 Matcher seatsInternshipMatcher = seatsInternshipPattern.matcher(inputLine);
                 if (seatsInternshipMatcher.find() && nameAdded == true
                         && departmentAdded == true && cityAdded == true && periodAdded == true && seatsAdded == false){
                     seats = seatsInternshipMatcher.group(1);
-                    //System.out.println("Seats: " + seats);
                     seatsAdded = true;
                     continue;
                 }
-                
+
                 Matcher applicationsInternshipMatcher = applicationsInternshipPattern.matcher(inputLine);
                 if (applicationsInternshipMatcher.find() && nameAdded == true
                         && departmentAdded == true && cityAdded == true && periodAdded == true && seatsAdded == true && applicationsAdded == false){
                     applications = applicationsInternshipMatcher.group(1);
-                    //System.out.println("Applications: " + applications);
                     applicationsAdded = true;
                     continue;
                 }
-                
+
                 Matcher endInternshipMatcher = endInternshipPattern.matcher(inputLine);
                 if (endInternshipMatcher.find() && nameAdded == true
                         && departmentAdded == true && cityAdded == true
                         && periodAdded == true && seatsAdded == true
                         && applicationsAdded == true){
-                    
+
                     Internship internship = new Internship();
-                    
+
                     internship.setCompany(company);
                     internship.setName(name);
                     internship.setDepartment(department);
                     internship.setCity(city);
-                    
+
                     // TO DO: "3-5" locuri si "2 " locuri.
                     // Solutie: Un parseInt personalizat :)
                     if(seats.contains("-") == true || seats.contains(" ") == true)
                         internship.setSeats(seats.charAt(seats.length() - 1));
                     else
                         internship.setSeats(Integer.parseInt(seats));
+
                     internship.setApplications(Integer.parseInt(applications));
-                    
-                    addInternship(internship);
-                    
+
+                    //Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "Company: {0}", company);
+                    //Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "Name: {0}", name);
+                    //Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "Department: {0}", department);
+                    //Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "City: {0}", city);
+
+                    // Add internship only if is in the selected cities.
+                    if(isCitiesToParse != true){
+                        addInternship(internship);
+                    }
+                    else{
+                        for(String cityWanted : cities){
+                            if(internship.getCity().equals(cityWanted)){
+                                addInternship(internship);
+                                break;
+                            }
+                        }
+                    }
+
                     nameAdded = false;
                     departmentAdded = false;
                     cityAdded = false;
                     periodAdded = false;
                     seatsAdded = false;
                     applicationsAdded = false;
-                    
-                    //System.out.println();
                 }
+            }
+
+            if(isCategoriesToParse == false){
+                setURLHome(i + 1);
+            }
+            else{
+                setURLCategory(i + 1, currentCategory); 
             }
        }
     }
