@@ -33,13 +33,15 @@ public class Main {
 
         crawler.setNameCrawler("Stagii pe bune");
         
-        //crawler.addCity("Iasi");
+        crawler.addCity("Iasi");
+        //crawler.addCity("Bucuresti");
         //crawler.addCity("Bacau");
-        //crawler.addCategory("123");
-        //crawler.addCategory("122");
-        crawler.addCategory("116");
-        crawler.addTechnology("Java");
+        crawler.addCategory("123");
+        crawler.addCategory("122");
+        //crawler.addCategory("116");
+        crawler.addTechnology("Python");
         //crawler.addTechnology("Perl");
+        crawler.addTechnology("Java");
         crawler.parse();
 
         int nr = 1;

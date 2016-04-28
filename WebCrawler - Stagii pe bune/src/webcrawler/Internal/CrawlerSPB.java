@@ -402,8 +402,10 @@ public class CrawlerSPB implements ICrawler {
                     //Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "City: {0}", city);
                     
                     // Parse internship for search technologies.
-                    if(isTechnologiesToParse == true)
+                    //if(isTechnologiesToParse == true)
                         parseTechnology(URLInternship, internship);
+
+                    
                     
                     // Add internship only if is in the selected cities.
                     if(isCitiesToParse == false && isTechnologiesToParse == false){
@@ -427,24 +429,26 @@ public class CrawlerSPB implements ICrawler {
                             }
                         }
                     else{
+                        
                         for(String cityWanted : cities){
                             if(internship.getCity().equals(cityWanted)){
                                 passedOne = true;
-                                break;
-                            }
-                        }
-                        
-                        for(String technologyWanted : technologies){
-                            if(internship.getTechnologies().contains(technologyWanted)){
-                                //addInternship(internship);
-                                passedTwo = true;
-                                break;
+                                
+                                for(String technologyWanted : technologies){
+                                    if(internship.getTechnologies().contains(technologyWanted)){
+                                        passedTwo = true;
+                                        break;
+                                    }
+                                }
                             }
                         }
                         
                         if(passedOne == true && passedTwo == true){
                             addInternship(internship);
                             added = true;
+                            
+                            Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "CITY: {0}", internship.getCity());
+                            Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "PASSED: {0}", passedOne + " " + passedTwo);
                             passedOne = passedTwo = false;
                         }
                     }
