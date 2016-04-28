@@ -150,6 +150,7 @@ public class CrawlerSPB implements ICrawler {
         Pattern numberOfPagesPattern = Pattern.compile("&nbsp; din (.+?) ");
         
         String inputLine;
+        numberOfPages = 0;
         while ((inputLine = input.readLine()) != null){ 
             Matcher numberOfPagesMatcher = numberOfPagesPattern.matcher(inputLine);
             if (numberOfPagesMatcher.find()){
@@ -223,24 +224,36 @@ public class CrawlerSPB implements ICrawler {
     public void parse() throws MalformedURLException, IOException{
         
         boolean isCategoryParse = false;
-        boolean citiesToParse = false;
+        boolean isCitiesToParse = false;
+        boolean isTechnologiesToParse = false;
         
         String currentCategory;
         
         internships.clear();
         
         if(cities.isEmpty()){
-            citiesToParse = false;
+            isCitiesToParse = false;
         }
         else{
-            citiesToParse = true;
+            isCitiesToParse = true;
+        }
+        
+        if(technologies.isEmpty()){
+            isTechnologiesToParse = false;
+        }
+        else{
+            isTechnologiesToParse = true;
         }
                 
         if(categories.isEmpty()){
             currentCategory = "home";
-            parseHelper(citiesToParse, currentCategory);
+            parseHelper(isTechnologiesToParse, isCitiesToParse, currentCategory);
         }
-
+        else{
+            for(String cat : categories){
+                parseHelper(isTechnologiesToParse, isCitiesToParse, cat);
+            }
+        }
     }
     
     /**
@@ -250,11 +263,14 @@ public class CrawlerSPB implements ICrawler {
      * @throws MalformedURLException
      * @throws IOException
      */
-    public void parseHelper(boolean isCitiesToParse, String currentCategory) throws MalformedURLException, IOException{
+    public void parseHelper(boolean isTechnologiesToParse, boolean isCitiesToParse, String currentCategory) throws MalformedURLException, IOException{
         
         URL siteURL;
-        boolean isCategoriesToParse;
-        
+        boolean isCategoriesToParse = false;
+        boolean passedOne = false;
+        boolean passedTwo = false;
+        boolean added = false;
+       
         if(currentCategory.equals("home") == true){
             isCategoriesToParse = false;
             setURLHome(0);
@@ -271,6 +287,8 @@ public class CrawlerSPB implements ICrawler {
         String period = null;
         String seats = null;
         String applications = null;
+        String URLInternship = null;
+        String URLInternshipBase = "http://www.stagiipebune.ro";
 
         String inputLine = null;
         boolean nameAdded = false;
@@ -280,13 +298,14 @@ public class CrawlerSPB implements ICrawler {
         boolean seatsAdded = false;
         boolean applicationsAdded = false; 
         
-        for(int i = 0; i < numberOfPages; i++){
-            siteURL = new URL(getURL());
+        for(int i = 0; i <= numberOfPages; i++){
+            siteURL = new URL(getURL()); 
             Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "URL: {0}", getURL());
             BufferedReader input = new BufferedReader(new InputStreamReader(siteURL.openStream()));
 
             Pattern companyInternshipPattern = Pattern.compile("<a href=.+? class='burgundtitles'>(.+?)</a>");
             Pattern nameInternshipPattern = Pattern.compile("<td><a href=.+?>(.+?)</a></td>");
+            Pattern URLInternshipPattern = Pattern.compile("<td><a href='(.+?)'>.+?</a></td>");
             Pattern departmentInternshipPattern = Pattern.compile("<td>(.+?)</td>");
             Pattern cityInternshipPattern = Pattern.compile("<td>(.+?)</td>");
             Pattern periodInternshipPattern = Pattern.compile("<td>(.+?)</td>");
@@ -300,7 +319,15 @@ public class CrawlerSPB implements ICrawler {
                     company = companyInternshipMatcher.group(1);
                     continue;
                 }
-
+                
+                Matcher URLInternshipMatcher = URLInternshipPattern.matcher(inputLine);
+                if (URLInternshipMatcher.find() && nameAdded == false){
+                    URLInternship = URLInternshipMatcher.group(1);
+                    URLInternship = URLInternship.replace("amp;", "");
+                    URLInternship = URLInternshipBase + URLInternship;
+                    Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "URL Internship: {0}", URLInternship);
+                }
+                
                 Matcher nameInternshipMatcher = nameInternshipPattern.matcher(inputLine);
                 if (nameInternshipMatcher.find() && nameAdded == false){
                     name = nameInternshipMatcher.group(1);
@@ -358,6 +385,7 @@ public class CrawlerSPB implements ICrawler {
                     internship.setName(name);
                     internship.setDepartment(department);
                     internship.setCity(city);
+                    internship.setPeriod(period);
 
                     // TO DO: "3-5" locuri si "2 " locuri.
                     // Solutie: Un parseInt personalizat :)
@@ -372,19 +400,82 @@ public class CrawlerSPB implements ICrawler {
                     //Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "Name: {0}", name);
                     //Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "Department: {0}", department);
                     //Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "City: {0}", city);
-
+                    
+                    // Parse internship for search technologies.
+                    if(isTechnologiesToParse == true)
+                        parseTechnology(URLInternship, internship);
+                    
                     // Add internship only if is in the selected cities.
-                    if(isCitiesToParse != true){
+                    if(isCitiesToParse == false && isTechnologiesToParse == false){
                         addInternship(internship);
+                        added = true;
                     }
-                    else{
+                    else if(isCitiesToParse == true && isTechnologiesToParse == false && added == false)
                         for(String cityWanted : cities){
                             if(internship.getCity().equals(cityWanted)){
                                 addInternship(internship);
+                                added = true;
+                                break;
+                            }
+                        }
+                    else if(isTechnologiesToParse == true && isCitiesToParse == false && added == false)
+                        for(String technologyWanted : technologies){
+                            if(internship.getTechnologies().contains(technologyWanted)){
+                                addInternship(internship);
+                                added = true;
+                                break;
+                            }
+                        }
+                    else{
+                        for(String cityWanted : cities){
+                            if(internship.getCity().equals(cityWanted)){
+                                passedOne = true;
+                                break;
+                            }
+                        }
+                        
+                        for(String technologyWanted : technologies){
+                            if(internship.getTechnologies().contains(technologyWanted)){
+                                //addInternship(internship);
+                                passedTwo = true;
+                                break;
+                            }
+                        }
+                        
+                        if(passedOne == true && passedTwo == true){
+                            addInternship(internship);
+                            added = true;
+                            passedOne = passedTwo = false;
+                        }
+                    }
+                    
+                    /*if(isCitiesToParse == false && added == false){
+                        addInternship(internship);
+                    }
+                    else{
+                        if(added == false)
+                        for(String cityWanted : cities){
+                            if(internship.getCity().equals(cityWanted)){
+                                addInternship(internship);
+                                passedOne = true;
                                 break;
                             }
                         }
                     }
+                    
+                    if(isTechnologiesToParse == false && added == false){
+                        addInternship(internship);
+                    }
+                    else{
+                        if(added == false)
+                        for(String technologyWanted : technologies){
+                            if(internship.getTechnologies().contains(technologyWanted)){
+                                addInternship(internship);
+                                passedTwo = true;
+                                break;
+                            }
+                        }
+                    }*/
 
                     nameAdded = false;
                     departmentAdded = false;
@@ -392,6 +483,7 @@ public class CrawlerSPB implements ICrawler {
                     periodAdded = false;
                     seatsAdded = false;
                     applicationsAdded = false;
+                    added = false;
                 }
             }
 
@@ -402,5 +494,54 @@ public class CrawlerSPB implements ICrawler {
                 setURLCategory(i + 1, currentCategory); 
             }
        }
+    }
+    
+    public void parseTechnology(String URLInternship, Internship internship) throws MalformedURLException, IOException{
+        URL siteURL = new URL(URLInternship);
+        Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "URL: {0}", URLInternship);
+        BufferedReader input = new BufferedReader(new InputStreamReader(siteURL.openStream()));
+
+        String language = null;
+        
+        String inputLine = null;
+
+        Pattern CCPlusPlusPattern = Pattern.compile("\\bC/C++\\b");
+        Pattern JavaPattern = Pattern.compile("\\bJava\\b");
+        Pattern RubyPattern = Pattern.compile("\\bRuby\\b");
+        Pattern PythonPattern = Pattern.compile("\\bPython\\b");
+        Pattern PerlPattern = Pattern.compile("\\bPerl\\b");
+
+        while ((inputLine = input.readLine()) != null){
+            Matcher CCPlusPlusMatcher = CCPlusPlusPattern.matcher(inputLine);
+            if (CCPlusPlusMatcher.find()){
+                language = CCPlusPlusMatcher.group();
+                internship.addTechnologies(language);
+                Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "Language: {0}", language);
+            }
+            Matcher JavaMatcher = JavaPattern.matcher(inputLine);
+            if (JavaMatcher.find()){
+                language = JavaMatcher.group();
+                internship.addTechnologies(language);
+                Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "Language: {0}", language);
+            }
+            Matcher RubyMatcher = RubyPattern.matcher(inputLine);
+            if (RubyMatcher.find()){
+                language = RubyMatcher.group();
+                internship.addTechnologies(language);
+                Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "Language: {0}", language);
+            }
+            Matcher PythonMatcher = PythonPattern.matcher(inputLine);
+            if (PythonMatcher.find()){
+                language = PythonMatcher.group();
+                internship.addTechnologies(language);
+                Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "Language: {0}", language);
+            }
+            Matcher PerlMatcher = PerlPattern.matcher(inputLine);
+            if (PerlMatcher.find()){
+                language = PerlMatcher.group();
+                internship.addTechnologies(language);
+                Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "Language: {0}", language);
+            }
+        }
     }
 }

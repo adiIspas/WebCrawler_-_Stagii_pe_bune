@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 package webcrawler.Internal;
+import java.util.ArrayList;
 import java.util.Objects;
 import webcrawler.Interfaces.*;
 
@@ -23,6 +24,7 @@ public class Internship implements IInternship {
     private boolean seen = false;
     private boolean favorite = false;
     private boolean applied = false;
+    private ArrayList<String> technologies = new ArrayList<>();
 
     /**
      * Get the company for the internship.
@@ -204,6 +206,15 @@ public class Internship implements IInternship {
      */
     public void setApplied(boolean applied){
         this.applied = applied;
+    }
+    
+    public ArrayList<String> getTechnologies(){
+        return technologies;
+    }
+
+    public void addTechnologies(String technology){
+        if(technologies.contains(technology) == false)
+            technologies.add(technology);
     }
 
     @Override

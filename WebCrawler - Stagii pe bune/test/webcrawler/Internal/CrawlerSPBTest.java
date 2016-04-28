@@ -92,7 +92,7 @@ public class CrawlerSPBTest {
     public void SetGetURL() throws IOException{
         CrawlerSPB crawler = CrawlerSPB.getInstance();
         
-        crawler.setURLCategory(0, 117);
+        crawler.setURLCategory(0, "117");
         
         assertEquals(crawler.getURL(),"http://www.stagiipebune.ro/stagii.html&page_num=3&page=stagii&category=117");
     }
@@ -111,12 +111,12 @@ public class CrawlerSPBTest {
         CrawlerSPB crawler = CrawlerSPB.getInstance();
         ArrayList<String> categories = new ArrayList<>();
         
-        crawler.addCategory("Cloud");
-        categories.add("Cloud");
-        crawler.addCategory("Mobile");
-        categories.add("Mobile");
-        crawler.addCategory("Network");
-        categories.add("Network");
+        crawler.addCategory("112");
+        categories.add("112");
+        crawler.addCategory("113");
+        categories.add("113");
+        crawler.addCategory("114");
+        categories.add("114");
        
         assertTrue(crawler.getCategories().equals(categories));
 
@@ -165,7 +165,7 @@ public class CrawlerSPBTest {
         CrawlerSPB crawler = CrawlerSPB.getInstance();
         crawler.clearInternships();
         
-        crawler.setURLCategory(0, 128);
+        crawler.addCategory("128");
         
         crawler.parse();
 

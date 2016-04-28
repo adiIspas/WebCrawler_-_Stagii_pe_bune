@@ -16,6 +16,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import webcrawler.Internal.CrawlerSPB;
 import webcrawler.Internal.Internship;
 
@@ -31,15 +33,22 @@ public class Main {
 
         crawler.setNameCrawler("Stagii pe bune");
         
-        crawler.addCity("Iasi");
-        crawler.addCity("Bacau");
-        //crawler.addCategory("114");
+        //crawler.addCity("Iasi");
+        //crawler.addCity("Bacau");
+        //crawler.addCategory("123");
+        //crawler.addCategory("122");
+        crawler.addCategory("116");
+        crawler.addTechnology("Java");
+        //crawler.addTechnology("Perl");
         crawler.parse();
-        
+
         int nr = 1;
         System.out.println();
         for(Internship i : crawler.getInternships()){
-            System.out.println(nr + ")" + i);
+            System.out.print(nr + ")" + i);
+            for(String language : i.getTechnologies())
+                System.out.print(" " + language);
+            System.out.println();
             nr++;
         }
     }
