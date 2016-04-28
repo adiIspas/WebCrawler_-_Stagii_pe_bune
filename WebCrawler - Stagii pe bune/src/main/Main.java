@@ -34,7 +34,7 @@ public class Main {
         crawler.setNameCrawler("Stagii pe bune");
         
         crawler.addCity("Iasi");
-        //crawler.addCity("Bucuresti");
+        crawler.addCity("Bucuresti");
         //crawler.addCity("Bacau");
         crawler.addCategory("123");
         crawler.addCategory("122");
