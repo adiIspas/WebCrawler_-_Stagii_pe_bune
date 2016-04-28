@@ -23,10 +23,10 @@ import webcrawler.Interfaces.*;
 public class CrawlerSPB implements ICrawler {
     
     private String URL;
-    private ArrayList<Internship> internships;
-    private ArrayList<String> categories;
-    private ArrayList<String> technologies;
-    private ArrayList<String> cities;
+    private final ArrayList<Internship> internships;
+    private final ArrayList<String> categories;
+    private final ArrayList<String> technologies;
+    private final ArrayList<String> cities;
     private int numberOfPages = 0;
     private String nameOfCrawler;
     private static CrawlerSPB instance = new CrawlerSPB();
@@ -41,16 +41,16 @@ public class CrawlerSPB implements ICrawler {
      * Private constructor for use a singleton design pattern.
      */
     private CrawlerSPB(){
-        internships = new ArrayList<Internship>();
-        categories = new ArrayList<String>();
-        technologies = new ArrayList<String>();
-        cities = new ArrayList<String>();
+        internships = new ArrayList<>();
+        categories = new ArrayList<>();
+        technologies = new ArrayList<>();
+        cities = new ArrayList<>();
     }
     private CrawlerSPB(CrawlerSPB other){
-        internships = new ArrayList<Internship>();
-        categories = new ArrayList<String>();
-        technologies = new ArrayList<String>();
-        cities = new ArrayList<String>();
+        internships = new ArrayList<>();
+        categories = new ArrayList<>();
+        technologies = new ArrayList<>();
+        cities = new ArrayList<>();
     }
     
     /**
@@ -219,31 +219,22 @@ public class CrawlerSPB implements ICrawler {
 
     /**
      * Parse method for the web site stagiipebune.ro
+     * @throws java.net.MalformedURLException
      */
     @Override
     public void parse() throws MalformedURLException, IOException{
         
-        boolean isCategoryParse = false;
-        boolean isCitiesToParse = false;
-        boolean isTechnologiesToParse = false;
+        boolean isCategoryParse;
+        boolean isCitiesToParse;
+        boolean isTechnologiesToParse;
         
         String currentCategory;
         
         internships.clear();
         
-        if(cities.isEmpty()){
-            isCitiesToParse = false;
-        }
-        else{
-            isCitiesToParse = true;
-        }
+        isCitiesToParse = !cities.isEmpty();
         
-        if(technologies.isEmpty()){
-            isTechnologiesToParse = false;
-        }
-        else{
-            isTechnologiesToParse = true;
-        }
+        isTechnologiesToParse = !technologies.isEmpty();
                 
         if(categories.isEmpty()){
             currentCategory = "home";
@@ -257,16 +248,17 @@ public class CrawlerSPB implements ICrawler {
     }
     
     /**
-     *
-     * @param isCitiesToParse
-     * @param currentCategory
+     * Helper for parse method. 
+     * @param isTechnologiesToParse Is true if the user want to search by technologies.
+     * @param isCitiesToParse Is true if the user want to search by cities.
+     * @param currentCategory The current category to parse.
      * @throws MalformedURLException
      * @throws IOException
      */
     public void parseHelper(boolean isTechnologiesToParse, boolean isCitiesToParse, String currentCategory) throws MalformedURLException, IOException{
         
         URL siteURL;
-        boolean isCategoriesToParse = false;
+        boolean isCategoriesToParse;
         boolean passedOne = false;
         boolean passedTwo = false;
         boolean added = false;
@@ -290,7 +282,7 @@ public class CrawlerSPB implements ICrawler {
         String URLInternship = null;
         String URLInternshipBase = "http://www.stagiipebune.ro";
 
-        String inputLine = null;
+        String inputLine;
         boolean nameAdded = false;
         boolean departmentAdded = false;
         boolean cityAdded = false;
@@ -403,7 +395,7 @@ public class CrawlerSPB implements ICrawler {
                     
                     // Parse internship for search technologies.
                     //if(isTechnologiesToParse == true)
-                        parseTechnology(URLInternship, internship);
+                    parseTechnology(URLInternship, internship);
 
                     
                     
@@ -452,34 +444,6 @@ public class CrawlerSPB implements ICrawler {
                             passedOne = passedTwo = false;
                         }
                     }
-                    
-                    /*if(isCitiesToParse == false && added == false){
-                        addInternship(internship);
-                    }
-                    else{
-                        if(added == false)
-                        for(String cityWanted : cities){
-                            if(internship.getCity().equals(cityWanted)){
-                                addInternship(internship);
-                                passedOne = true;
-                                break;
-                            }
-                        }
-                    }
-                    
-                    if(isTechnologiesToParse == false && added == false){
-                        addInternship(internship);
-                    }
-                    else{
-                        if(added == false)
-                        for(String technologyWanted : technologies){
-                            if(internship.getTechnologies().contains(technologyWanted)){
-                                addInternship(internship);
-                                passedTwo = true;
-                                break;
-                            }
-                        }
-                    }*/
 
                     nameAdded = false;
                     departmentAdded = false;
@@ -500,14 +464,22 @@ public class CrawlerSPB implements ICrawler {
        }
     }
     
+    /**
+     * Parse method for technologies.
+     * @param URLInternship Internship page for parse.
+     * @param internship Internship object.
+     * @throws MalformedURLException
+     * @throws IOException 
+     */
     public void parseTechnology(String URLInternship, Internship internship) throws MalformedURLException, IOException{
         URL siteURL = new URL(URLInternship);
+        
         Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "URL: {0}", URLInternship);
+        
         BufferedReader input = new BufferedReader(new InputStreamReader(siteURL.openStream()));
 
-        String language = null;
-        
-        String inputLine = null;
+        String language;
+        String inputLine;
 
         Pattern CCPlusPlusPattern = Pattern.compile("\\bC/C++\\b");
         Pattern JavaPattern = Pattern.compile("\\bJava\\b");
