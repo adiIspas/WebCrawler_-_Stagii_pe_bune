@@ -7,9 +7,6 @@ package webcrawler.Internal;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -66,25 +63,33 @@ public class CrawlerSPBTest {
         CrawlerSPB crawler = CrawlerSPB.getInstance();
         crawler.clearInternships();
         
-        HashSet<Internship> internships = new HashSet<>();
+        ArrayList<Internship> internships = new ArrayList<>();
         
         Internship internship1 = new Internship();
         Internship internship2 = new Internship();
+        
+        crawler.clearInternships();
 
         internship1.setName("Java developer");
         internship1.setCompany("Google");
         internship1.setCity("Bucharest");
         internship1.setDepartment("AI");
-        crawler.addInternship(internship1);
-        internships.add(internship1);
+        internship1.setReport(0);
+        internship1.setPeriod("10-10-2016");
         
         internship2.setName("C/C++ developer");
         internship2.setCompany("Google");
         internship2.setCity("Bucharest");
         internship2.setDepartment("AI");
-        crawler.addInternship(internship2);
-        internships.add(internship2);
+        internship2.setReport(0);
+        internship2.setPeriod("10-10-2016");
         
+        crawler.addInternship(internship1);
+        crawler.addInternship(internship2);
+        
+        internships.add(internship2);
+        internships.add(internship1);
+
         assertTrue(crawler.getInternships().equals(internships));
     }
     
@@ -93,8 +98,7 @@ public class CrawlerSPBTest {
         CrawlerSPB crawler = CrawlerSPB.getInstance();
         
         crawler.setURLCategory(0, "117");
-        
-        assertEquals(crawler.getURL(),"http://www.stagiipebune.ro/stagii.html&page_num=3&page=stagii&category=117");
+        assertEquals(crawler.getURL(),"http://www.stagiipebune.ro/stagii.html&page_num=0&page=stagii&category=117");
     }
     
     @Test
@@ -111,13 +115,15 @@ public class CrawlerSPBTest {
         CrawlerSPB crawler = CrawlerSPB.getInstance();
         ArrayList<String> categories = new ArrayList<>();
         
+        crawler.clearCategories();
+        
         crawler.addCategory("112");
         categories.add("112");
         crawler.addCategory("113");
         categories.add("113");
         crawler.addCategory("114");
         categories.add("114");
-       
+        
         assertTrue(crawler.getCategories().equals(categories));
 
     }
@@ -169,7 +175,7 @@ public class CrawlerSPBTest {
         
         crawler.parse();
 
-        HashSet<Internship> internships = new HashSet<>();
+        ArrayList<Internship> internships = new ArrayList<>();
 
         Internship internship = new Internship();
 
@@ -179,10 +185,11 @@ public class CrawlerSPBTest {
         internship.setCity("Bucuresti");
         internship.setSeats(2);
         internship.setApplications(4);
+        internship.setReport(0);
+        internship.setPeriod("01.04.16 - 31.10.16");
         internships.add(internship);
         
-        //Logger.getLogger(CrawlerSPBTest.class.getName()).log(Level.INFO, "Nr: " + crawler.getURL());
-        //Logger.getLogger(CrawlerSPBTest.class.getName()).log(Level.INFO, "Nr: " + crawler.getInternships().size());
+        //Logger.getLogger(CrawlerSPBTest.class.getName()).log(Level.INFO, "Stagiu: " + crawler.getInternships().get(0));
 
         assertTrue(crawler.getInternships().equals(internships));
         

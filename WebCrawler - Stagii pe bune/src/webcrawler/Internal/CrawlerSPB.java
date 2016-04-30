@@ -183,7 +183,14 @@ public class CrawlerSPB implements ICrawler {
      * @return Categories for internships.
      */
     public ArrayList<String> getCategories(){
-        return categories;
+        return new ArrayList<>(categories);
+    }
+    
+    /**
+     * Clear the list of categories.
+     */
+    public void clearCategories(){
+        categories.clear();
     }
 
     /**
@@ -199,7 +206,7 @@ public class CrawlerSPB implements ICrawler {
      * @return Technologies for internships.
      */
     public ArrayList<String> getTechnologies(){
-        return technologies;
+        return new ArrayList<>(technologies);
     }
 
     /**

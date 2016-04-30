@@ -283,32 +283,6 @@ public class Internship implements IInternship, Serializable{
         return true;
     }
 
-    /*@Override
-    public boolean equals(Object obj){
-        if (obj instanceof Internship){
-            Internship stagiu = (Internship) obj;
-            
-            if((stagiu.company.equals(((Internship) obj).company)) 
-                && (stagiu.name.equals(((Internship) obj).name))
-                && (stagiu.department.equals(((Internship) obj).department))
-                && (stagiu.city.equals(((Internship) obj).city))
-                && (stagiu.seats == ((Internship) obj).seats)
-                && (stagiu.applications == ((Internship) obj).applications))
-                return true;
-        }
-        return false;
-  }
-
-    @Override
-    public int hashCode(){
-        int hash = 7;
-        hash = 83 * hash + Objects.hashCode(this.name);
-        hash = 83 * hash + Objects.hashCode(this.company);
-        hash = 83 * hash + Objects.hashCode(this.department);
-        hash = 83 * hash + Objects.hashCode(this.city);
-        return hash;
-    }*/
-
     @Override
     public String toString() {
         return this.company + " | " + this.name + " | " 
