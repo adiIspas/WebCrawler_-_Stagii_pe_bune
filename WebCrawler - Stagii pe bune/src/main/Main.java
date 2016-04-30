@@ -28,21 +28,24 @@ public class Main {
         
         crawler.addCity("Iasi");
         crawler.addCity("Bucuresti");
+        crawler.addCity("Bacau");
         crawler.addCategory("123");
         crawler.addCategory("122");
+        crawler.addCategory("124");
         crawler.addTechnology("Python");
         crawler.addTechnology("Java");
+        crawler.addTechnology("C/C");
         
         SD.setFile("internships.ysp");
        
         internships = SD.deserialization();
-        System.out.println("SIZE1: " + internships.size());
+        System.out.println("SIZE_1: " + internships.size());
         crawler.setInternships(internships);
         
-        System.out.println("SIZE2: " + crawler.getInternships().size());
+        System.out.println("SIZE_2: " + crawler.getInternships().size());
         crawler.parse();
         
-        System.out.println("SIZE3: " + crawler.getInternships().size());
+        System.out.println("SIZE_3: " + crawler.getInternships().size());
         SD.serialization(crawler.getInternships());
         
         // La afisare se va mai face o filtrare conform cerintelor
