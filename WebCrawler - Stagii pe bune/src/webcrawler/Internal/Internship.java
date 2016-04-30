@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 package webcrawler.Internal;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Objects;
 import webcrawler.Interfaces.*;
@@ -12,7 +13,7 @@ import webcrawler.Interfaces.*;
  * Modeling the internship object for crawler.
  * @author Adrian Ispas, 243
  */
-public class Internship implements IInternship {
+public class Internship implements IInternship, Serializable{
     private String company = "";
     private String name = "";
     private String department = "";

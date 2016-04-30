@@ -6,6 +6,12 @@
 package serialization_deserialization.Internal;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.HashSet;
 import serialization_deserialization.Interfaces.ISDInternships;
 import webcrawler.Internal.Internship;
@@ -17,7 +23,7 @@ import webcrawler.Internal.Internship;
 public class SDInternships implements ISDInternships {
     
     private static SDInternships instance;
-    private File file;
+    private String file = null;
     
     /***
      * Private constructor for use a singleton design pattern.
@@ -39,7 +45,7 @@ public class SDInternships implements ISDInternships {
      * Get the file where will be serialization or deserialization the internships.
      * @return The file.
      */
-    public File getFile() {
+    public String getFile() {
         return file;
     } 
     
@@ -47,7 +53,7 @@ public class SDInternships implements ISDInternships {
      * Set the file where will be serialization or deserialization the internships.
      * @param file The file.
      */
-    public void setFile(File file) {
+    public void setFile(String file) {
         this.file = file;
     }
        
@@ -56,16 +62,34 @@ public class SDInternships implements ISDInternships {
      * @param internships The array of internships.
      */
     @Override
-    public void serialization(HashSet<Internship> internships) {
-       
+    public void serialization(ArrayList<Internship> internships) {
+       try(ObjectOutputStream fout = new ObjectOutputStream(new FileOutputStream(file)))
+        {
+           fout.writeObject(internships);
+        } 
+        catch (IOException ex)
+        {
+            System.out.println(ex);
+        }
     }
     
     /***
      * Deserialization the internships from the file
-     * @param internships The array of internships.
+     * @return 
      */
     @Override
-    public void deserialization(HashSet<Internship> internships) {
+    public ArrayList<Internship> deserialization() {
+        ArrayList<Internship> internships = new ArrayList<>();
         
+        try(ObjectInputStream fin = new ObjectInputStream(new FileInputStream(file)))
+        {
+            internships = (ArrayList<Internship>)fin.readObject();
+        } 
+        catch (Exception ex)
+        {
+            System.out.println(ex);
+        } 
+        
+        return internships;
     }
 }

@@ -7,6 +7,8 @@ package main;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
+import serialization_deserialization.Internal.SDInternships;
 import webcrawler.Internal.CrawlerSPB;
 import webcrawler.Internal.Internship;
 
@@ -19,6 +21,8 @@ public class Main {
     public static void main(String[] args) throws MalformedURLException, IOException{
         
         CrawlerSPB crawler = CrawlerSPB.getInstance();
+        SDInternships SD = SDInternships.getInstance();
+        ArrayList<Internship> internships = new ArrayList<>();
 
         crawler.setNameCrawler("Stagii pe bune");
         
@@ -28,8 +32,20 @@ public class Main {
         crawler.addCategory("122");
         crawler.addTechnology("Python");
         crawler.addTechnology("Java");
+        
+        SD.setFile("internships.ysp");
+       
+        internships = SD.deserialization();
+        System.out.println("SIZE1: " + internships.size());
+        crawler.setInternships(internships);
+        
+        System.out.println("SIZE2: " + crawler.getInternships().size());
         crawler.parse();
-
+        
+        System.out.println("SIZE3: " + crawler.getInternships().size());
+        SD.serialization(crawler.getInternships());
+        
+        // La afisare se va mai face o filtrare conform cerintelor
         int nr = 1;
         System.out.println();
         for (Internship i : crawler.getInternships()) {

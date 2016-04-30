@@ -23,7 +23,7 @@ import webcrawler.Interfaces.*;
 public class CrawlerSPB implements ICrawler {
     
     private String URL;
-    private final ArrayList<Internship> internships;
+    private ArrayList<Internship> internships;
     private final ArrayList<String> categories;
     private final ArrayList<String> technologies;
     private final ArrayList<String> cities;
@@ -93,7 +93,15 @@ public class CrawlerSPB implements ICrawler {
      */
     public void addInternship(Internship internship) {
         if(internships.contains(internship) == false)
-            internships.add(internship);
+            internships.add(0,internship);
+    }
+    
+    /**
+     * Set the actual internships.
+     * @param internships Internships result from deserialization.
+     */
+    public void setInternships(ArrayList<Internship> internships){
+        this.internships = internships;
     }
 
     /**
@@ -230,7 +238,7 @@ public class CrawlerSPB implements ICrawler {
         
         String currentCategory;
         
-        internships.clear();
+        //internships.clear();
         
         isCitiesToParse = !cities.isEmpty();
         

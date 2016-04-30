@@ -5,7 +5,7 @@
  */
 package serialization_deserialization.Interfaces;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import webcrawler.Internal.Internship;
 
 /**
@@ -14,8 +14,8 @@ import webcrawler.Internal.Internship;
  */
 public interface ISDInternships {
 
-    void serialization(HashSet<Internship> internships);
-    void deserialization(HashSet<Internship> internships);
+    void serialization(ArrayList<Internship> internships);
+    ArrayList<Internship> deserialization();
     
     
 }
