@@ -5,6 +5,7 @@
  */
 package main;
 
+import gui.MainGUI;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
@@ -23,41 +24,41 @@ public class Main {
         CrawlerSPB crawler = CrawlerSPB.getInstance();
         SDInternships SD = SDInternships.getInstance();
         ArrayList<Internship> internships = new ArrayList<>();
-
+        
+        MainGUI graphics = new MainGUI();
+        graphics.setVisible(true);
+        
         crawler.setNameCrawler("Stagii pe bune");
         
-        crawler.addCity("Iasi");
-        crawler.addCity("Bucuresti");
-        crawler.addCity("Bacau");
-        crawler.addCategory("123");
-        crawler.addCategory("122");
-        crawler.addCategory("124");
-        crawler.addTechnology("Python");
-        crawler.addTechnology("Java");
-        crawler.addTechnology("C/C");
+        //crawler.addCity("Iasi");
+        //crawler.addCity("Bucuresti");
+        //crawler.addCategory("123");
+        //crawler.addCategory("122");
+        //crawler.addTechnology("Python");
+        //crawler.addTechnology("Java");
         
         SD.setFile("internships.ysp");
        
-        internships = SD.deserialization();
+        //internships = SD.deserialization();
         System.out.println("SIZE_1: " + internships.size());
         crawler.setInternships(internships);
         
         System.out.println("SIZE_2: " + crawler.getInternships().size());
-        crawler.parse();
+        
         
         System.out.println("SIZE_3: " + crawler.getInternships().size());
-        SD.serialization(crawler.getInternships());
+        //SD.serialization(crawler.getInternships());
         
         // La afisare se va mai face o filtrare conform cerintelor
-        int nr = 1;
-        System.out.println();
-        for (Internship i : crawler.getInternships()) {
-            System.out.print(nr + ") " + i);
-            i.getTechnologies().stream().forEach((language) -> {
-                System.out.print(" " + language);
-            });
-            System.out.println();
-            nr++;
-        }
+//        int nr = 1;
+//        System.out.println();
+//        for (Internship i : crawler.getInternships()) {
+//            System.out.print(nr + ") " + i);
+//            i.getTechnologies().stream().forEach((language) -> {
+//                System.out.print(" " + language);
+//            });
+//            System.out.println();
+//            nr++;
+//        }
     }
 }

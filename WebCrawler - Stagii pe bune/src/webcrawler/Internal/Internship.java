@@ -7,6 +7,7 @@ package webcrawler.Internal;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.function.Consumer;
 import webcrawler.Interfaces.*;
 
 /**
@@ -285,9 +286,14 @@ public class Internship implements IInternship, Serializable{
 
     @Override
     public String toString() {
+        String languages = "";
+        for(String language : getTechnologies()){
+            languages = languages + " " + language;
+        }
+        
         return this.company + " | " + this.name + " | " 
                 + this.department + " | " + this.city + " | "
                 + this.seats + " | " + this.applications + " | "
-                + this.report + " | " + this.period;        
+                + this.report + " | " + this.period + " | " + languages;        
     } 
 }
