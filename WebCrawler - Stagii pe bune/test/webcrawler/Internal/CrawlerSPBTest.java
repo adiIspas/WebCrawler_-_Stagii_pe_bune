@@ -7,6 +7,9 @@ package webcrawler.Internal;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JTextArea;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -29,6 +32,8 @@ public class CrawlerSPBTest {
     @Test
     public void addInternships(){
         CrawlerSPB crawler = CrawlerSPB.getInstance();
+        JTextArea text = new JTextArea();
+        crawler.setTextArea(text);
         
         Internship internship1 = new Internship();
         Internship internship2 = new Internship();
@@ -169,6 +174,8 @@ public class CrawlerSPBTest {
     @Test
     public void parse() throws IOException{
         CrawlerSPB crawler = CrawlerSPB.getInstance();
+        JTextArea text = new JTextArea();
+        crawler.setTextArea(text);
         crawler.clearInternships();
         
         crawler.addCategory("128");
@@ -188,8 +195,9 @@ public class CrawlerSPBTest {
         internship.setReport(0);
         internship.setPeriod("01.04.16 - 31.10.16");
         internships.add(internship);
+        crawler.addInternship(internship);
         
-        //Logger.getLogger(CrawlerSPBTest.class.getName()).log(Level.INFO, "Stagiu: " + crawler.getInternships().get(0));
+        Logger.getLogger(CrawlerSPBTest.class.getName()).log(Level.INFO, "Stagiu: " + crawler.getInternships().get(0));
 
         assertTrue(crawler.getInternships().equals(internships));
         
