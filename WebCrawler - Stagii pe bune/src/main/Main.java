@@ -30,13 +30,6 @@ public class Main {
         
         crawler.setNameCrawler("Stagii pe bune");
         
-        //crawler.addCity("Iasi");
-        //crawler.addCity("Bucuresti");
-        //crawler.addCategory("123");
-        //crawler.addCategory("122");
-        //crawler.addTechnology("Python");
-        //crawler.addTechnology("Java");
-        
         SD.setFile("internships.ysp");
        
         //internships = SD.deserialization();

@@ -319,12 +319,12 @@ public class CrawlerSPB implements ICrawler {
      * @throws IOException
      */
     public void parseHelper(boolean isTechnologiesToParse, boolean isCitiesToParse, String currentCategory) throws MalformedURLException, IOException{
-        
+        Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "PARSE: {0}", "Am intrat in PARSEHELPER");
         SwingWorker<Boolean, Internship> worker = new SwingWorker<Boolean, Internship>() {
             String category = "";
             @Override
             protected Boolean doInBackground() throws Exception {
-                
+                Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "PARSE: {0}", "Am intrat in DOINBACK");
                 if(currentCategory.equals("home")){
                     URL siteURL;
                     boolean isCategoriesToParse;
@@ -334,10 +334,12 @@ public class CrawlerSPB implements ICrawler {
 
                     if(currentCategory.equals("home") == true){
                         isCategoriesToParse = false;
+                        Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "PARSE: {0}", "Am intrat in HOME");
                         setURLHome(0);
                     }
                     else{
                         isCategoriesToParse = true;
+                        Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "PARSE: {0}", "Am intrat in CATEGORY");
                         setURLCategory(0,currentCategory);
                     }
 
@@ -373,11 +375,15 @@ public class CrawlerSPB implements ICrawler {
                         Pattern periodInternshipPattern = Pattern.compile("<td>(.+?)</td>");
                         Pattern seatsInternshipPattern = Pattern.compile("<td align=.+?>(.+?)</td>");
                         Pattern applicationsInternshipPattern = Pattern.compile("<td align=.+?>(.+?)</td>");
-                        Pattern endInternshipPattern = Pattern.compile("<a href=.+? onmouseover=.+? onmouseout=.+?>(.+?)</a>");
-
+                        Pattern endInternshipPattern = Pattern.compile("<td align='right'></td>");
+                        //Pattern endInternshipPattern = Pattern.compile("<a href=.+? onmouseover=.+? onmouseout=.+?>(.+?)</a>");
+                        
+                        Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "PARSE: {0}", "Am intrat in PAGINI");
+                        
                         while ((inputLine = input.readLine()) != null){
                             Matcher companyInternshipMatcher = companyInternshipPattern.matcher(inputLine);
                             if (companyInternshipMatcher.find()){
+                                Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "PARSE: {0}", "Am intrat in COMPANIE");
                                 company = companyInternshipMatcher.group(1);
                                 continue;
                             }
@@ -394,6 +400,7 @@ public class CrawlerSPB implements ICrawler {
                             if (nameInternshipMatcher.find() && nameAdded == false){
                                 name = nameInternshipMatcher.group(1);
                                 nameAdded = true;
+                                Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "PARSE: {0}", "Am intrat in NAMEINTERN");
                                 continue;
                             }
 
@@ -401,6 +408,7 @@ public class CrawlerSPB implements ICrawler {
                             if (departmentInternshipMatcher.find() && nameAdded == true && departmentAdded == false){
                                 department = departmentInternshipMatcher.group(1);
                                 departmentAdded = true;
+                                Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "PARSE: {0}", "Am intrat in DEPARTMENTINTERN");
                                 continue;
                             }
 
@@ -408,6 +416,7 @@ public class CrawlerSPB implements ICrawler {
                             if (cityInternshipMatcher.find() && nameAdded == true && departmentAdded == true && cityAdded == false){
                                 city = cityInternshipMatcher.group(1);
                                 cityAdded = true;
+                                Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "PARSE: {0}", "Am intrat in CITYINTERN");
                                 continue;
                             }
 
@@ -416,6 +425,7 @@ public class CrawlerSPB implements ICrawler {
                                     && departmentAdded == true && cityAdded == true && periodAdded == false){
                                 period = periodInternshipMatcher.group(1);
                                 periodAdded = true;
+                                Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "PARSE: {0}", "Am intrat in PERIODINTERN");
                                 continue;
                             }
 
@@ -424,6 +434,7 @@ public class CrawlerSPB implements ICrawler {
                                     && departmentAdded == true && cityAdded == true && periodAdded == true && seatsAdded == false){
                                 seats = seatsInternshipMatcher.group(1);
                                 seatsAdded = true;
+                                Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "PARSE: {0}", "Am intrat in SETSINTERN");
                                 continue;
                             }
 
@@ -432,6 +443,7 @@ public class CrawlerSPB implements ICrawler {
                                     && departmentAdded == true && cityAdded == true && periodAdded == true && seatsAdded == true && applicationsAdded == false){
                                 applications = applicationsInternshipMatcher.group(1);
                                 applicationsAdded = true;
+                                Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "PARSE: {0}", "Am intrat in APPLICATIONINTERN");
                                 continue;
                             }
 
@@ -440,7 +452,7 @@ public class CrawlerSPB implements ICrawler {
                                     && departmentAdded == true && cityAdded == true
                                     && periodAdded == true && seatsAdded == true
                                     && applicationsAdded == true){
-
+                                 Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "PARSE: {0}", "Am intrat in ADAUGARE");
                                 Internship internship = new Internship();
 
                                 internship.setCompany(company);
@@ -472,6 +484,7 @@ public class CrawlerSPB implements ICrawler {
                                 // Add internship only if is in the selected cities.
                                 if(isCitiesToParse == false && isTechnologiesToParse == false){
                                     addInternship(internship);
+                                    Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "PARSE: {0}", "Am intrat in ADAUGATAICI");
                                     added = true;
                                 }
                                 else if(isCitiesToParse == true && isTechnologiesToParse == false && added == false)
@@ -594,7 +607,8 @@ public class CrawlerSPB implements ICrawler {
                             Pattern periodInternshipPattern = Pattern.compile("<td>(.+?)</td>");
                             Pattern seatsInternshipPattern = Pattern.compile("<td align=.+?>(.+?)</td>");
                             Pattern applicationsInternshipPattern = Pattern.compile("<td align=.+?>(.+?)</td>");
-                            Pattern endInternshipPattern = Pattern.compile("<a href=.+? onmouseover=.+? onmouseout=.+?>(.+?)</a>");
+                            Pattern endInternshipPattern = Pattern.compile("<td align='right'></td>");
+                            //Pattern endInternshipPattern = Pattern.compile("<a href=.+? onmouseover=.+? onmouseout=.+?>(.+?)</a>");
 
                             while ((inputLine = input.readLine()) != null){
                                 Matcher companyInternshipMatcher = companyInternshipPattern.matcher(inputLine);
