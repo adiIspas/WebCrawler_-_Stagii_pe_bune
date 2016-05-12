@@ -575,7 +575,7 @@ public class MainGUI extends javax.swing.JFrame {
 
             SD.setFile("internships.ysp");
             internships = SD.deserialization();
-            crawler.setInternships(internships);
+            //crawler.setInternships(internships);
             
             showInterns();
             

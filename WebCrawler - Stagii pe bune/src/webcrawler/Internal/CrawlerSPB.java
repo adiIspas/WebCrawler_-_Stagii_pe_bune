@@ -34,11 +34,11 @@ public class CrawlerSPB implements ICrawler {
     private String nameOfCrawler;
     private static CrawlerSPB instance = new CrawlerSPB();
     
-    final private String base = "http://www.stagiipebune.ro/stagii.html";
-    final private String page = "&page_num=";
-    final private String intern = "&page=stagii";
-    final private String category = "&category=";
-    final private String domain = "&domain=4";
+    final private String BASE = "http://www.stagiipebune.ro/stagii.html";
+    final private String PAGE = "&page_num=";
+    final private String INTERN = "&page=stagii";
+    final private String CATEGORY = "&category=";
+    final private String DOMAIN = "&domain=4";
     
     private JTextArea textArea;
     private JProgressBar progress;
@@ -157,12 +157,12 @@ public class CrawlerSPB implements ICrawler {
 
     /**
      * Set the URL for the internship with categories.
-     * @param pageNumber Number of page to parse.
+     * @param pageNumber Number of PAGE to parse.
      * @param categoryType Category for parse.
      * @throws java.io.IOException
      */
     public void setURLCategory(int pageNumber, String categoryType) throws IOException {
-        this.URL =  base + page + pageNumber + intern + category + categoryType;
+        this.URL =  BASE + PAGE + pageNumber + INTERN + CATEGORY + categoryType;
         
         if(pageNumber == 0)
             determinesNumberOfPages();
@@ -170,11 +170,11 @@ public class CrawlerSPB implements ICrawler {
     
     /**
      * Set the URL for the internship without categories.
-     * @param pageNumber Number of page to parse.
+     * @param pageNumber Number of PAGE to parse.
      * @throws IOException 
      */
     public void setURLHome(int pageNumber) throws IOException {
-        this.URL =  base + page + pageNumber + intern + domain;
+        this.URL =  BASE + PAGE + pageNumber + INTERN + DOMAIN;
         
         if(pageNumber == 0)
             determinesNumberOfPages();
@@ -214,7 +214,7 @@ public class CrawlerSPB implements ICrawler {
     }
 
     /**
-     * Add a category in list of options.
+     * Add a CATEGORY in list of options.
      * @param category Category to add.
      */
     public void addCategory(String category){
@@ -290,16 +290,12 @@ public class CrawlerSPB implements ICrawler {
     @Override
     public void parse() throws MalformedURLException, IOException{
         
-        boolean isCategoryParse;
         boolean isCitiesToParse;
         boolean isTechnologiesToParse;
         
         String currentCategory;
         
-        //internships.clear();
-        
         isCitiesToParse = !cities.isEmpty();
-        
         isTechnologiesToParse = !technologies.isEmpty();
                 
         if(categories.isEmpty()){
@@ -307,10 +303,8 @@ public class CrawlerSPB implements ICrawler {
             parseHelper(isTechnologiesToParse, isCitiesToParse, currentCategory);
         }
         else{
-            //for(String cat : categories){
             currentCategory = "multiple";
             parseHelper(isTechnologiesToParse, isCitiesToParse, currentCategory);
-            //}
         }
     }
     
@@ -318,17 +312,16 @@ public class CrawlerSPB implements ICrawler {
      * Helper for parse method. 
      * @param isTechnologiesToParse Is true if the user want to search by technologies.
      * @param isCitiesToParse Is true if the user want to search by cities.
-     * @param currentCategory The current category to parse.
+     * @param currentCategory The current CATEGORY to parse.
      * @throws MalformedURLException
      * @throws IOException
      */
     public void parseHelper(boolean isTechnologiesToParse, boolean isCitiesToParse, String currentCategory) throws MalformedURLException, IOException{
-        Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "PARSE: {0}", "Am intrat in PARSEHELPER");
+
         SwingWorker<Boolean, Internship> worker = new SwingWorker<Boolean, Internship>() {
             String category = "";
             @Override
             protected Boolean doInBackground() throws Exception {
-                Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "PARSE: {0}", "Am intrat in DOINBACK");
                 if(currentCategory.equals("home")){
                     URL siteURL;
                     boolean isCategoriesToParse;
@@ -338,12 +331,10 @@ public class CrawlerSPB implements ICrawler {
 
                     if(currentCategory.equals("home") == true){
                         isCategoriesToParse = false;
-                        Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "PARSE: {0}", "Am intrat in HOME");
                         setURLHome(0);
                     }
                     else{
                         isCategoriesToParse = true;
-                        Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "PARSE: {0}", "Am intrat in CATEGORY");
                         setURLCategory(0,currentCategory);
                     }
 
@@ -380,14 +371,11 @@ public class CrawlerSPB implements ICrawler {
                         Pattern seatsInternshipPattern = Pattern.compile("<td align=.+?>(.+?)</td>");
                         Pattern applicationsInternshipPattern = Pattern.compile("<td align=.+?>(.+?)</td>");
                         Pattern endInternshipPattern = Pattern.compile("<td align='right'></td>");
-                        //Pattern endInternshipPattern = Pattern.compile("<a href=.+? onmouseover=.+? onmouseout=.+?>(.+?)</a>");
-                        
-                        Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "PARSE: {0}", "Am intrat in PAGINI");
+                        //Pattern endInternshipPattern = Pattern.compile("<a href=.+? onmouseover=.+? onmouseout=.+?>(.+?)</a>");   
                         
                         while ((inputLine = input.readLine()) != null){
                             Matcher companyInternshipMatcher = companyInternshipPattern.matcher(inputLine);
                             if (companyInternshipMatcher.find()){
-                                Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "PARSE: {0}", "Am intrat in COMPANIE");
                                 company = companyInternshipMatcher.group(1);
                                 continue;
                             }
@@ -397,14 +385,12 @@ public class CrawlerSPB implements ICrawler {
                                 URLInternship = URLInternshipMatcher.group(1);
                                 URLInternship = URLInternship.replace("amp;", "");
                                 URLInternship = URLInternshipBase + URLInternship;
-                                Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "URL Internship: {0}", URLInternship);
                             }
 
                             Matcher nameInternshipMatcher = nameInternshipPattern.matcher(inputLine);
                             if (nameInternshipMatcher.find() && nameAdded == false){
                                 name = nameInternshipMatcher.group(1);
                                 nameAdded = true;
-                                Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "PARSE: {0}", "Am intrat in NAMEINTERN");
                                 continue;
                             }
 
@@ -412,7 +398,6 @@ public class CrawlerSPB implements ICrawler {
                             if (departmentInternshipMatcher.find() && nameAdded == true && departmentAdded == false){
                                 department = departmentInternshipMatcher.group(1);
                                 departmentAdded = true;
-                                Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "PARSE: {0}", "Am intrat in DEPARTMENTINTERN");
                                 continue;
                             }
 
@@ -420,7 +405,6 @@ public class CrawlerSPB implements ICrawler {
                             if (cityInternshipMatcher.find() && nameAdded == true && departmentAdded == true && cityAdded == false){
                                 city = cityInternshipMatcher.group(1);
                                 cityAdded = true;
-                                Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "PARSE: {0}", "Am intrat in CITYINTERN");
                                 continue;
                             }
 
@@ -429,7 +413,6 @@ public class CrawlerSPB implements ICrawler {
                                     && departmentAdded == true && cityAdded == true && periodAdded == false){
                                 period = periodInternshipMatcher.group(1);
                                 periodAdded = true;
-                                Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "PARSE: {0}", "Am intrat in PERIODINTERN");
                                 continue;
                             }
 
@@ -438,7 +421,6 @@ public class CrawlerSPB implements ICrawler {
                                     && departmentAdded == true && cityAdded == true && periodAdded == true && seatsAdded == false){
                                 seats = seatsInternshipMatcher.group(1);
                                 seatsAdded = true;
-                                Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "PARSE: {0}", "Am intrat in SETSINTERN");
                                 continue;
                             }
 
@@ -447,7 +429,6 @@ public class CrawlerSPB implements ICrawler {
                                     && departmentAdded == true && cityAdded == true && periodAdded == true && seatsAdded == true && applicationsAdded == false){
                                 applications = applicationsInternshipMatcher.group(1);
                                 applicationsAdded = true;
-                                Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "PARSE: {0}", "Am intrat in APPLICATIONINTERN");
                                 continue;
                             }
 
@@ -456,7 +437,6 @@ public class CrawlerSPB implements ICrawler {
                                     && departmentAdded == true && cityAdded == true
                                     && periodAdded == true && seatsAdded == true
                                     && applicationsAdded == true){
-                                 Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "PARSE: {0}", "Am intrat in ADAUGARE");
                                 Internship internship = new Internship();
 
                                 internship.setCompany(company);
@@ -474,21 +454,11 @@ public class CrawlerSPB implements ICrawler {
 
                                 internship.setApplications(Integer.parseInt(applications));
 
-                                //Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "Company: {0}", company);
-                                //Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "Name: {0}", name);
-                                //Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "Department: {0}", department);
-                                //Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "City: {0}", city);
-
-                                // Parse internship for search technologies.
-                                //if(isTechnologiesToParse == true)
                                 parseTechnology(URLInternship, internship);
-
-
-
+                                
                                 // Add internship only if is in the selected cities.
                                 if(isCitiesToParse == false && isTechnologiesToParse == false){
                                     addInternship(internship);
-                                    Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "PARSE: {0}", "Am intrat in ADAUGATAICI");
                                     added = true;
                                 }
                                 else if(isCitiesToParse == true && isTechnologiesToParse == false && added == false)
@@ -791,58 +761,104 @@ public class CrawlerSPB implements ICrawler {
     
     /**
      * Parse method for technologies.
-     * @param URLInternship Internship page for parse.
+     * @param URLInternship Internship PAGE for parse.
      * @param internship Internship object.
      * @throws MalformedURLException
      * @throws IOException 
      */
     public void parseTechnology(String URLInternship, Internship internship) throws MalformedURLException, IOException{
+        String inputLine;
         URL siteURL = new URL(URLInternship);
-        
-        Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "URL: {0}", URLInternship);
-        
         BufferedReader input = new BufferedReader(new InputStreamReader(siteURL.openStream()));
 
-        String language;
-        String inputLine;
-
-        Pattern CCPlusPlusPattern = Pattern.compile("\\bC/C++\\b");
-        Pattern JavaPattern = Pattern.compile("\\bJava\\b");
-        Pattern RubyPattern = Pattern.compile("\\bRuby\\b");
-        Pattern PythonPattern = Pattern.compile("\\bPython\\b");
-        Pattern PerlPattern = Pattern.compile("\\bPerl\\b");
-
         while ((inputLine = input.readLine()) != null){
-            Matcher CCPlusPlusMatcher = CCPlusPlusPattern.matcher(inputLine);
-            if (CCPlusPlusMatcher.find()){
-                language = CCPlusPlusMatcher.group();
-                internship.addTechnologies(language);
-                Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "Language: {0}", language);
+            if(parseCC(inputLine))
+                internship.addTechnologies("C/C++");
+            
+            if(parseJava(inputLine))
+                internship.addTechnologies("Java");
+            
+            if(parseRuby(inputLine)){
+                internship.addTechnologies("Ruby");
             }
-            Matcher JavaMatcher = JavaPattern.matcher(inputLine);
-            if (JavaMatcher.find()){
-                language = JavaMatcher.group();
-                internship.addTechnologies(language);
-                Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "Language: {0}", language);
+            
+            if(parsePython(inputLine)){
+                internship.addTechnologies("Python");
             }
-            Matcher RubyMatcher = RubyPattern.matcher(inputLine);
-            if (RubyMatcher.find()){
-                language = RubyMatcher.group();
-                internship.addTechnologies(language);
-                Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "Language: {0}", language);
-            }
-            Matcher PythonMatcher = PythonPattern.matcher(inputLine);
-            if (PythonMatcher.find()){
-                language = PythonMatcher.group();
-                internship.addTechnologies(language);
-                Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "Language: {0}", language);
-            }
-            Matcher PerlMatcher = PerlPattern.matcher(inputLine);
-            if (PerlMatcher.find()){
-                language = PerlMatcher.group();
-                internship.addTechnologies(language);
-                Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "Language: {0}", language);
+            
+            if(parsePerl(inputLine)){
+                internship.addTechnologies("Perl");
             }
         }
+    }
+    
+    private boolean parseJava(final String inputLine) throws IOException{
+        String language;
+        Pattern JavaPattern = Pattern.compile("\\bJava\\b");
+
+        Matcher JavaMatcher = JavaPattern.matcher(inputLine);
+        if (JavaMatcher.find()){
+            language = JavaMatcher.group();
+            Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "Language: {0}", language);
+            return true;
+        }
+        
+        return false;
+    }
+    
+    private boolean parseCC(final String inputLine){
+        String language;
+        Pattern CCPlusPlusPattern = Pattern.compile("\\bC/C++\\b");
+        
+        Matcher CCPlusPlusMatcher = CCPlusPlusPattern.matcher(inputLine);
+        if (CCPlusPlusMatcher.find()){
+            language = CCPlusPlusMatcher.group();
+            Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "Language: {0}", language);
+            return true;
+        }
+            
+        return false;
+    }
+    
+    private boolean parseRuby(final String inputLine){
+        String language;
+        Pattern RubyPattern = Pattern.compile("\\bRuby\\b");
+        
+        Matcher RubyMatcher = RubyPattern.matcher(inputLine);
+        if (RubyMatcher.find()){
+            language = RubyMatcher.group();
+            Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "Language: {0}", language);
+            return true;
+        }
+        
+        return false;
+    }
+    
+    private boolean parsePython(final String inputLine){
+        String language;
+        Pattern PythonPattern = Pattern.compile("\\bPython\\b");
+        
+        Matcher PythonMatcher = PythonPattern.matcher(inputLine);
+        if (PythonMatcher.find()){
+            language = PythonMatcher.group();
+            Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "Language: {0}", language);
+            return true;
+        }
+        
+        return false;
+    }
+    
+    private boolean parsePerl(final String inputLine){
+        String language;
+        Pattern PerlPattern = Pattern.compile("\\bPerl\\b");
+        
+        Matcher PerlMatcher = PerlPattern.matcher(inputLine);
+        if (PerlMatcher.find()){
+            language = PerlMatcher.group();
+            Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "Language: {0}", language);
+            return true;
+        }
+        
+        return false;
     }
 }
