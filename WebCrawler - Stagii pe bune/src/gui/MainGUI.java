@@ -8,11 +8,13 @@ package gui;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JProgressBar;
 import serialization_deserialization.Internal.SDInternships;
 import webcrawler.Internal.CrawlerSPB;
+import webcrawler.Internal.Internship;
 
 /**
  *
@@ -22,8 +24,7 @@ public class MainGUI extends javax.swing.JFrame {
     
     CrawlerSPB crawler = CrawlerSPB.getInstance();
     SDInternships SD = SDInternships.getInstance();
-    
-    
+
     /**
      * Creates new form MainInterface
      */
@@ -568,48 +569,32 @@ public class MainGUI extends javax.swing.JFrame {
         try {
             crawler.setProgressBar(jProgressBar1);
             crawler.setTextArea(jTextArea2);
+            
+            SDInternships SD = SDInternships.getInstance();
+            ArrayList<Internship> internships = new ArrayList<>();
+
+            SD.setFile("internships.ysp");
+            internships = SD.deserialization();
+            crawler.setInternships(internships);
+            
+            showInterns();
+            
             crawler.parse();
         } catch (IOException ex) {
             Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jButton3ActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
-//    public static void main(String args[]) {
-//        /* Set the Nimbus look and feel */
-//        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-//        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-//         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-//         */
-//        try {
-//            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-//                if ("Nimbus".equals(info.getName())) {
-//                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-//                    break;
-//                }
-//            }
-//        } catch (ClassNotFoundException ex) {
-//            java.util.logging.Logger.getLogger(MainGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (InstantiationException ex) {
-//            java.util.logging.Logger.getLogger(MainGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (IllegalAccessException ex) {
-//            java.util.logging.Logger.getLogger(MainGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-//            java.util.logging.Logger.getLogger(MainGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        }
-//        //</editor-fold>
-//        //</editor-fold>
-//
-//        /* Create and display the form */
-//        java.awt.EventQueue.invokeLater(new Runnable() {
-//            public void run() {
-//                new MainGUI().setVisible(true);
-//            }
-//        });
-//    }
-
+    private void showInterns(){
+        
+        int numberInternships = 1;
+        for (Internship internship : crawler.getInternships()) {
+            jTextArea2.setText(numberInternships + ") " + internship + "\n" + jTextArea2.getText());
+            numberInternships++;
+        }
+        crawler.setNumberInternships(numberInternships);
+    }
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;

@@ -83,6 +83,10 @@ public class CrawlerSPB implements ICrawler {
         numberInternships = 1;
     }
     
+    public void setNumberInternships(int numberInternships){
+        this.numberInternships = numberInternships;
+    }
+    
     /**
      * Set the name of the crawler.
      * @param nameOfCrawler Name of crawler.
