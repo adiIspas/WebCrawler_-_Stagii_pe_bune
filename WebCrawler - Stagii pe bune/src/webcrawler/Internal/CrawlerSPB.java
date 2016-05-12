@@ -524,7 +524,7 @@ public class CrawlerSPB implements ICrawler {
         String seats = null;
         String applications = null;
         String URLInternship = null;
-        String URLInternshipBase = "http://www.stagiipebune.ro";
+        final String URLInternshipBase = "http://www.stagiipebune.ro";
         String inputLine;
        
         if(categoryToParse.equals("HOME") == true)
@@ -598,7 +598,6 @@ public class CrawlerSPB implements ICrawler {
 
                     if(checkInternship(internship, isCitiesToParse, isTechnologiesToParse) == true)
                         addInternship(internship);
-
 
                     nameAdded = false;
                     departmentAdded = false;
