@@ -322,486 +322,19 @@ public class CrawlerSPB implements ICrawler {
             String category = "";
             @Override
             protected Boolean doInBackground() throws Exception {
+                
                 if(currentCategory.equals("home")){
-                    URL siteURL;
-                    
-                    boolean isCategoriesToParse;         
-                    boolean nameAdded = false;
-                    boolean departmentAdded = false;
-                    boolean cityAdded = false;
-                    boolean periodAdded = false;
-                    boolean seatsAdded = false;
-                    boolean applicationsAdded = false; 
-                    
-                    String company = null;
-                    String name = null;
-                    String department = null;
-                    String city = null;
-                    String period = null;
-                    String seats = null;
-                    String applications = null;
-                    String URLInternship = null;
-                    String URLInternshipBase = "http://www.stagiipebune.ro";
-                    String inputLine;
-
-                    if(currentCategory.equals("home") == true){
-                        isCategoriesToParse = false;
-                        setURLHome(0);
-                    }
-                    else{
-                        isCategoriesToParse = true;
-                        setURLCategory(0,currentCategory);
-                    }
-
-                    for(int i = 0; i <= numberOfPages; i++){
-
-                        siteURL = new URL(getURL()); 
-                        Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "URL: {0}", getURL());
-                        BufferedReader input = new BufferedReader(new InputStreamReader(siteURL.openStream()));
-
-                        //Pattern companyInternshipPattern = Pattern.compile("<a href=.+? class='burgundtitles'>(.+?)</a>");
-                        //Pattern nameInternshipPattern = Pattern.compile("<td><a href=.+?>(.+?)</a></td>");
-                        //Pattern URLInternshipPattern = Pattern.compile("<td><a href='(.+?)'>.+?</a></td>");
-                        //Pattern departmentInternshipPattern = Pattern.compile("<td>(.+?)</td>");
-                        //Pattern cityInternshipPattern = Pattern.compile("<td>(.+?)</td>");
-                        //Pattern periodInternshipPattern = Pattern.compile("<td>(.+?)</td>");
-                        //Pattern seatsInternshipPattern = Pattern.compile("<td align=.+?>(.+?)</td>");
-                        //Pattern applicationsInternshipPattern = Pattern.compile("<td align=.+?>(.+?)</td>");
-                        //Pattern endInternshipPattern = Pattern.compile("<td align='right'></td>");
-                        //Pattern endInternshipPattern = Pattern.compile("<a href=.+? onmouseover=.+? onmouseout=.+?>(.+?)</a>");   
-                        
-                        String result;
-                        while ((inputLine = input.readLine()) != null){
-                            if((result = parseCompany(inputLine)).equals("NOTFOUND") == false){
-                               company = result;
-                               continue;
-                            }
-                            
-                            if((result = parseURL(inputLine)).equals("NOTFOUND") == false && nameAdded == false){
-                                URLInternship = URLInternshipBase + result;
-                            }
-                            
-                            if((result = parseName(inputLine)).equals("NOTFOUND") == false && nameAdded == false){
-                                name = result;
-                                nameAdded = true;
-                                continue;
-                            }
-                            
-                            if((result = parseDepartment(inputLine)).equals("NOTFOUND") == false && nameAdded == true && departmentAdded == false){
-                                department = result;
-                                departmentAdded = true;
-                                continue;
-                            }
-                            
-                            if((result = parseCity(inputLine)).equals("NOTFOUND") == false  && nameAdded == true && departmentAdded == true && cityAdded == false){
-                                city = result;
-                                cityAdded = true;
-                                continue;
-                            }
-                            
-                            if((result = parsePeriod(inputLine)).equals("NOTFOUND") == false && nameAdded == true
-                                    && departmentAdded == true && cityAdded == true && periodAdded == false){
-                                period = result;
-                                periodAdded = true;
-                                continue;
-                            }
-                            
-                            if((result = parseSeats(inputLine)).equals("NOTFOUND") == false && nameAdded == true
-                                    && departmentAdded == true && cityAdded == true && periodAdded == true && seatsAdded == false){
-                                seats = result;
-                                seatsAdded = true;
-                                continue;
-                            }
-                            
-                            if((result = parseApplications(inputLine)).equals("NOTFOUND") == false && nameAdded == true
-                                    && departmentAdded == true && cityAdded == true && periodAdded == true && seatsAdded == true && applicationsAdded == false){
-                                applications = result;
-                                applicationsAdded = true;
-                                continue;
-                            }
-
-//                            Matcher companyInternshipMatcher = companyInternshipPattern.matcher(inputLine);
-//                            if (companyInternshipMatcher.find()){
-//                                company = companyInternshipMatcher.group(1);
-//                                continue;
-//                            }
-
-//                            Matcher URLInternshipMatcher = URLInternshipPattern.matcher(inputLine);
-//                            if (URLInternshipMatcher.find() && nameAdded == false){
-//                                URLInternship = URLInternshipMatcher.group(1);
-//                                URLInternship = URLInternship.replace("amp;", "");
-//                                URLInternship = URLInternshipBase + URLInternship;
-//                            }
-
-//                            Matcher nameInternshipMatcher = nameInternshipPattern.matcher(inputLine);
-//                            if (nameInternshipMatcher.find() && nameAdded == false){
-//                                name = nameInternshipMatcher.group(1);
-//                                nameAdded = true;
-//                                continue;
-//                            }
-
-//                            Matcher departmentInternshipMatcher = departmentInternshipPattern.matcher(inputLine);
-//                            if (departmentInternshipMatcher.find() && nameAdded == true && departmentAdded == false){
-//                                department = departmentInternshipMatcher.group(1);
-//                                departmentAdded = true;
-//                                continue;
-//                            }
-
-//                            Matcher cityInternshipMatcher = cityInternshipPattern.matcher(inputLine);
-//                            if (cityInternshipMatcher.find() && nameAdded == true && departmentAdded == true && cityAdded == false){
-//                                city = cityInternshipMatcher.group(1);
-//                                cityAdded = true;
-//                                continue;
-//                            }
-
-//                            Matcher periodInternshipMatcher = periodInternshipPattern.matcher(inputLine);
-//                            if (periodInternshipMatcher.find() && nameAdded == true
-//                                    && departmentAdded == true && cityAdded == true && periodAdded == false){
-//                                period = periodInternshipMatcher.group(1);
-//                                periodAdded = true;
-//                                continue;
-//                            }
-
-//                            Matcher seatsInternshipMatcher = seatsInternshipPattern.matcher(inputLine);
-//                            if (seatsInternshipMatcher.find() && nameAdded == true
-//                                    && departmentAdded == true && cityAdded == true && periodAdded == true && seatsAdded == false){
-//                                seats = seatsInternshipMatcher.group(1);
-//                                seatsAdded = true;
-//                                continue;
-//                            }
-
-//                            Matcher applicationsInternshipMatcher = applicationsInternshipPattern.matcher(inputLine);
-//                            if (applicationsInternshipMatcher.find() && nameAdded == true
-//                                    && departmentAdded == true && cityAdded == true && periodAdded == true && seatsAdded == true && applicationsAdded == false){
-//                                applications = applicationsInternshipMatcher.group(1);
-//                                applicationsAdded = true;
-//                                continue;
-//                            }
-
-                            //Matcher endInternshipMatcher = endInternshipPattern.matcher(inputLine);
-                            if (parseEnd(inputLine).equals("DONE") && nameAdded == true
-                                    && departmentAdded == true && cityAdded == true
-                                    && periodAdded == true && seatsAdded == true
-                                    && applicationsAdded == true){
-                                
-                                Internship internship = initInternship(company, name, department, city, period, seats, applications);
-//                                internship.setCompany(company);
-//                                internship.setName(name);
-//                                internship.setDepartment(department);
-//                                internship.setCity(city);
-//                                internship.setPeriod(period);
-//
-//                                // TO DO: "3-5" locuri si "2 " locuri.
-//                                // Solutie: Un parseInt personalizat :)
-//                                if(seats.contains("-") == true || seats.contains(" ") == true)
-//                                    internship.setSeats(seats.charAt(seats.length() - 1));
-//                                else
-//                                    internship.setSeats(Integer.parseInt(seats));
-//
-//                                internship.setApplications(Integer.parseInt(applications));
-
-                                parseTechnology(URLInternship, internship);
-                                
-                                // Add internship only if is in the selected cities.
-//                                if(isCitiesToParse == false && isTechnologiesToParse == false){
-//                                    addInternship(internship);
-//                                    added = true;
-//                                }
-//                                else if(isCitiesToParse == true && isTechnologiesToParse == false && added == false)
-//                                    for(String cityWanted : cities){
-//                                        if(internship.getCity().equals(cityWanted)){
-//                                            addInternship(internship);
-//                                            added = true;
-//                                            break;
-//                                        }
-//                                    }
-//                                else if(isTechnologiesToParse == true && isCitiesToParse == false && added == false)
-//                                    for(String technologyWanted : technologies){
-//                                        if(internship.getTechnologies().contains(technologyWanted)){
-//                                            addInternship(internship);
-//                                            added = true;
-//                                            break;
-//                                        }
-//                                    }
-//                                else{
-//
-//                                    for(String cityWanted : cities){
-//                                        if(internship.getCity().equals(cityWanted)){
-//                                            passedOne = true;
-//
-//                                            for(String technologyWanted : technologies){
-//                                                if(internship.getTechnologies().contains(technologyWanted)){
-//                                                    passedTwo = true;
-//                                                    break;
-//                                                }
-//                                            }
-//                                        }
-//                                    }
-//
-//                                    if(passedOne == true && passedTwo == true){
-//                                        addInternship(internship);
-//                                        added = true;
-//                                        Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "CITY: {0}", internship.getCity());
-//                                        Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "PASSED: {0}", passedOne + " " + passedTwo);
-//                                        passedOne = passedTwo = false;
-//                                    }
-//                                }
-
-                                if(checkInternship(internship, isCategoriesToParse, isCategoriesToParse) == true)
-                                    addInternship(internship);
-
-
-                                nameAdded = false;
-                                departmentAdded = false;
-                                cityAdded = false;
-                                periodAdded = false;
-                                seatsAdded = false;
-                                applicationsAdded = false;
-                            }
-                        }
-
-                        if(isCategoriesToParse == false){
-                            setURLHome(i + 1);
-                        }
-                        else{
-                            setURLCategory(i + 1, currentCategory); 
-                        }
-                        
-                        int currentProgress;
-                        if(numberOfPages != 0){
-                            currentProgress = 100 / numberOfPages + 1;
-                            progress.setValue(currentProgress * i);
-                        }
-                        else{
-                            currentProgress = 100;
-                            progress.setValue(currentProgress);
-                        }
-                   }
+                    searchIntern(isCitiesToParse, isTechnologiesToParse, "HOME");
                 }
                 else{
                     for(String cat : categories){
                         category = cat;
-                        URL siteURL;
-                        boolean isCategoriesToParse;
-                        boolean passedOne = false;
-                        boolean passedTwo = false;
-                        boolean added = false;
-
-                        if(currentCategory.equals("home") == true){
-                            isCategoriesToParse = false;
-                            setURLHome(0);
-                        }
-                        else{
-                            isCategoriesToParse = true;
-                            //setURLCategory(0,currentCategory);
-                            setURLCategory(0,category);
-                        }
-
-                        String company = null;
-                        String name = null;
-                        String department = null;
-                        String city = null;
-                        String period = null;
-                        String seats = null;
-                        String applications = null;
-                        String URLInternship = null;
-                        String URLInternshipBase = "http://www.stagiipebune.ro";
-
-                        String inputLine;
-                        boolean nameAdded = false;
-                        boolean departmentAdded = false;
-                        boolean cityAdded = false;
-                        boolean periodAdded = false;
-                        boolean seatsAdded = false;
-                        boolean applicationsAdded = false; 
-
-                        for(int i = 0; i <= numberOfPages; i++){
-
-                            siteURL = new URL(getURL()); 
-                            Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "URL: {0}", getURL());
-                            BufferedReader input = new BufferedReader(new InputStreamReader(siteURL.openStream()));
-
-                            Pattern companyInternshipPattern = Pattern.compile("<a href=.+? class='burgundtitles'>(.+?)</a>");
-                            Pattern nameInternshipPattern = Pattern.compile("<td><a href=.+?>(.+?)</a></td>");
-                            Pattern URLInternshipPattern = Pattern.compile("<td><a href='(.+?)'>.+?</a></td>");
-                            Pattern departmentInternshipPattern = Pattern.compile("<td>(.+?)</td>");
-                            Pattern cityInternshipPattern = Pattern.compile("<td>(.+?)</td>");
-                            Pattern periodInternshipPattern = Pattern.compile("<td>(.+?)</td>");
-                            Pattern seatsInternshipPattern = Pattern.compile("<td align=.+?>(.+?)</td>");
-                            Pattern applicationsInternshipPattern = Pattern.compile("<td align=.+?>(.+?)</td>");
-                            Pattern endInternshipPattern = Pattern.compile("<td align='right'></td>");
-                            //Pattern endInternshipPattern = Pattern.compile("<a href=.+? onmouseover=.+? onmouseout=.+?>(.+?)</a>");
-
-                            while ((inputLine = input.readLine()) != null){
-                                Matcher companyInternshipMatcher = companyInternshipPattern.matcher(inputLine);
-                                if (companyInternshipMatcher.find()){
-                                    company = companyInternshipMatcher.group(1);
-                                    continue;
-                                }
-
-                                Matcher URLInternshipMatcher = URLInternshipPattern.matcher(inputLine);
-                                if (URLInternshipMatcher.find() && nameAdded == false){
-                                    URLInternship = URLInternshipMatcher.group(1);
-                                    URLInternship = URLInternship.replace("amp;", "");
-                                    URLInternship = URLInternshipBase + URLInternship;
-                                    Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "URL Internship: {0}", URLInternship);
-                                }
-
-                                Matcher nameInternshipMatcher = nameInternshipPattern.matcher(inputLine);
-                                if (nameInternshipMatcher.find() && nameAdded == false){
-                                    name = nameInternshipMatcher.group(1);
-                                    nameAdded = true;
-                                    continue;
-                                }
-
-                                Matcher departmentInternshipMatcher = departmentInternshipPattern.matcher(inputLine);
-                                if (departmentInternshipMatcher.find() && nameAdded == true && departmentAdded == false){
-                                    department = departmentInternshipMatcher.group(1);
-                                    departmentAdded = true;
-                                    continue;
-                                }
-
-                                Matcher cityInternshipMatcher = cityInternshipPattern.matcher(inputLine);
-                                if (cityInternshipMatcher.find() && nameAdded == true && departmentAdded == true && cityAdded == false){
-                                    city = cityInternshipMatcher.group(1);
-                                    cityAdded = true;
-                                    continue;
-                                }
-
-                                Matcher periodInternshipMatcher = periodInternshipPattern.matcher(inputLine);
-                                if (periodInternshipMatcher.find() && nameAdded == true
-                                        && departmentAdded == true && cityAdded == true && periodAdded == false){
-                                    period = periodInternshipMatcher.group(1);
-                                    periodAdded = true;
-                                    continue;
-                                }
-
-                                Matcher seatsInternshipMatcher = seatsInternshipPattern.matcher(inputLine);
-                                if (seatsInternshipMatcher.find() && nameAdded == true
-                                        && departmentAdded == true && cityAdded == true && periodAdded == true && seatsAdded == false){
-                                    seats = seatsInternshipMatcher.group(1);
-                                    seatsAdded = true;
-                                    continue;
-                                }
-
-                                Matcher applicationsInternshipMatcher = applicationsInternshipPattern.matcher(inputLine);
-                                if (applicationsInternshipMatcher.find() && nameAdded == true
-                                        && departmentAdded == true && cityAdded == true && periodAdded == true && seatsAdded == true && applicationsAdded == false){
-                                    applications = applicationsInternshipMatcher.group(1);
-                                    applicationsAdded = true;
-                                    continue;
-                                }
-
-                                Matcher endInternshipMatcher = endInternshipPattern.matcher(inputLine);
-                                if (endInternshipMatcher.find() && nameAdded == true
-                                        && departmentAdded == true && cityAdded == true
-                                        && periodAdded == true && seatsAdded == true
-                                        && applicationsAdded == true){
-
-                                    Internship internship = new Internship();
-
-                                    internship.setCompany(company);
-                                    internship.setName(name);
-                                    internship.setDepartment(department);
-                                    internship.setCity(city);
-                                    internship.setPeriod(period);
-
-                                    // TO DO: "3-5" locuri si "2 " locuri.
-                                    // Solutie: Un parseInt personalizat :)
-                                    if(seats.contains("-") == true || seats.contains(" ") == true)
-                                        internship.setSeats(seats.charAt(seats.length() - 1));
-                                    else
-                                        internship.setSeats(Integer.parseInt(seats));
-
-                                    internship.setApplications(Integer.parseInt(applications));
-
-                                    //Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "Company: {0}", company);
-                                    //Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "Name: {0}", name);
-                                    //Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "Department: {0}", department);
-                                    //Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "City: {0}", city);
-
-                                    // Parse internship for search technologies.
-                                    //if(isTechnologiesToParse == true)
-                                    parseTechnology(URLInternship, internship);
-
-
-
-                                    // Add internship only if is in the selected cities.
-                                    if(isCitiesToParse == false && isTechnologiesToParse == false){
-                                        addInternship(internship);
-                                        added = true;
-                                    }
-                                    else if(isCitiesToParse == true && isTechnologiesToParse == false && added == false)
-                                        for(String cityWanted : cities){
-                                            if(internship.getCity().equals(cityWanted)){
-                                                addInternship(internship);
-                                                added = true;
-                                                break;
-                                            }
-                                        }
-                                    else if(isTechnologiesToParse == true && isCitiesToParse == false && added == false)
-                                        for(String technologyWanted : technologies){
-                                            if(internship.getTechnologies().contains(technologyWanted)){
-                                                addInternship(internship);
-                                                added = true;
-                                                break;
-                                            }
-                                        }
-                                    else{
-
-                                        for(String cityWanted : cities){
-                                            if(internship.getCity().equals(cityWanted)){
-                                                passedOne = true;
-
-                                                for(String technologyWanted : technologies){
-                                                    if(internship.getTechnologies().contains(technologyWanted)){
-                                                        passedTwo = true;
-                                                        break;
-                                                    }
-                                                }
-                                            }
-                                        }
-
-                                        if(passedOne == true && passedTwo == true){
-                                            addInternship(internship);
-                                            added = true;
-                                            Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "CITY: {0}", internship.getCity());
-                                            Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "PASSED: {0}", passedOne + " " + passedTwo);
-                                            passedOne = passedTwo = false;
-                                        }
-                                    }
-
-
-                                    nameAdded = false;
-                                    departmentAdded = false;
-                                    cityAdded = false;
-                                    periodAdded = false;
-                                    seatsAdded = false;
-                                    applicationsAdded = false;
-                                    added = false;
-                                }
-                            }
-
-                            if(isCategoriesToParse == false){
-                                setURLHome(i + 1);
-                            }
-                            else{
-                                setURLCategory(i + 1, category); 
-                            }
-
-                            int currentProgress = 0;
-                            if(numberOfPages != 0){
-                                currentProgress = 100 / numberOfPages + 1;
-                                progress.setValue(currentProgress * i);
-                            }
-                            else{
-                                currentProgress = 100;
-                                progress.setValue(currentProgress);
-                            }
-                       }
+                        
+                        searchIntern(isCitiesToParse, isTechnologiesToParse, category);
                     }
                 }
-            return true;}
+                return true;
+            }
         };
         
         worker.execute();
@@ -935,20 +468,17 @@ public class CrawlerSPB implements ICrawler {
         boolean added = false;      
         
         if(isCitiesToParse == false && isTechnologiesToParse == false){
-            //addInternship(internship);
             return true;
         }
         else if(isCitiesToParse == true && isTechnologiesToParse == false && added == false)
             for(String cityWanted : cities){
                 if(internship.getCity().equals(cityWanted)){
-                    //addInternship(internship);
                     return true;
                 }
             }
         else if(isTechnologiesToParse == true && isCitiesToParse == false && added == false)
             for(String technologyWanted : technologies){
                 if(internship.getTechnologies().contains(technologyWanted)){
-                    //addInternship(internship);
                     return true;
                 }
             }
@@ -968,7 +498,6 @@ public class CrawlerSPB implements ICrawler {
             }
 
             if(passedOne == true && passedTwo == true){
-                //addInternship(internship);
                 Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "CITY: {0}", internship.getCity());
                 Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "PASSED: {0}", passedOne + " " + passedTwo);
                 return true;
@@ -976,6 +505,130 @@ public class CrawlerSPB implements ICrawler {
         }
         
         return false;
+    }
+    
+    private void searchIntern(final boolean isCitiesToParse, final boolean isTechnologiesToParse, String categoryToParse) throws MalformedURLException, IOException{
+        URL siteURL;
+        boolean nameAdded = false;
+        boolean departmentAdded = false;
+        boolean cityAdded = false;
+        boolean periodAdded = false;
+        boolean seatsAdded = false;
+        boolean applicationsAdded = false; 
+
+        String company = null;
+        String name = null;
+        String department = null;
+        String city = null;
+        String period = null;
+        String seats = null;
+        String applications = null;
+        String URLInternship = null;
+        String URLInternshipBase = "http://www.stagiipebune.ro";
+        String inputLine;
+       
+        if(categoryToParse.equals("HOME") == true)
+            setURLHome(0);
+        else
+            setURLCategory(0,categoryToParse);
+        
+        for(int i = 0; i <= numberOfPages; i++){
+            siteURL = new URL(getURL()); 
+            Logger.getLogger(CrawlerSPB.class.getName()).log(Level.INFO, "URL: {0}", getURL());
+            BufferedReader input = new BufferedReader(new InputStreamReader(siteURL.openStream()));   
+
+            String result;
+            while ((inputLine = input.readLine()) != null){
+                if((result = parseCompany(inputLine)).equals("NOTFOUND") == false){
+                   company = result;
+                   continue;
+                }
+
+                if((result = parseURL(inputLine)).equals("NOTFOUND") == false && nameAdded == false){
+                    URLInternship = URLInternshipBase + result;
+                }
+
+                if((result = parseName(inputLine)).equals("NOTFOUND") == false && nameAdded == false){
+                    name = result;
+                    nameAdded = true;
+                    continue;
+                }
+
+                if((result = parseDepartment(inputLine)).equals("NOTFOUND") == false && nameAdded == true && departmentAdded == false){
+                    department = result;
+                    departmentAdded = true;
+                    continue;
+                }
+
+                if((result = parseCity(inputLine)).equals("NOTFOUND") == false  && nameAdded == true && departmentAdded == true && cityAdded == false){
+                    city = result;
+                    cityAdded = true;
+                    continue;
+                }
+
+                if((result = parsePeriod(inputLine)).equals("NOTFOUND") == false && nameAdded == true
+                        && departmentAdded == true && cityAdded == true && periodAdded == false){
+                    period = result;
+                    periodAdded = true;
+                    continue;
+                }
+
+                if((result = parseSeats(inputLine)).equals("NOTFOUND") == false && nameAdded == true
+                        && departmentAdded == true && cityAdded == true && periodAdded == true && seatsAdded == false){
+                    seats = result;
+                    seatsAdded = true;
+                    continue;
+                }
+
+                if((result = parseApplications(inputLine)).equals("NOTFOUND") == false && nameAdded == true
+                        && departmentAdded == true && cityAdded == true && periodAdded == true && seatsAdded == true && applicationsAdded == false){
+                    applications = result;
+                    applicationsAdded = true;
+                    continue;
+                }
+
+                if (parseEnd(inputLine).equals("DONE") && nameAdded == true
+                        && departmentAdded == true && cityAdded == true
+                        && periodAdded == true && seatsAdded == true
+                        && applicationsAdded == true){
+
+                    Internship internship = initInternship(company, name, department, city, period, seats, applications);
+
+                    parseTechnology(URLInternship, internship);
+
+                    if(checkInternship(internship, isCitiesToParse, isTechnologiesToParse) == true)
+                        addInternship(internship);
+
+
+                    nameAdded = false;
+                    departmentAdded = false;
+                    cityAdded = false;
+                    periodAdded = false;
+                    seatsAdded = false;
+                    applicationsAdded = false;
+                }
+            }
+            
+            if(categoryToParse.equals("HOME") == true)
+                setURLHome(i + 1);
+            else
+                setURLCategory(i + 1, categoryToParse); 
+
+            setProgressOfBar(i, numberOfPages);
+       }
+    }
+    
+    public void setProgressOfBar(int i, int numberOfPages){
+        int currentProgress;
+        
+        if(numberOfPages != 0){
+            currentProgress = 100 / numberOfPages + 1;
+            progress.setValue(currentProgress * i);
+        }
+        else{
+            currentProgress = 100;
+            progress.setValue(currentProgress);
+        }
     }
     
     /**
