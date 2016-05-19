@@ -2,4 +2,4 @@
 
 Actual version: 1.0
 
-A simple crawler for site stagiipebune.ro for find internships with cities, categories or technologies you want.
+A simple crawler for site stagiipebune.ro to find internships with cities, categories or technologies you want.
